@@ -35,7 +35,6 @@ Yii::import('zii.widgets.jui.CJuiWidget');
  * за списком возможных опций (пар имя-значение).
  *
  * @author Sebastian Thierer <sebathi@gmail.com>
- * @version $Id: CJuiSelectable.php 3207 2011-05-12 08:05:26Z mdomba $
  * @package zii.widgets.jui
  * @since 1.1
  */

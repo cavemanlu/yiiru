@@ -14,7 +14,6 @@
  * CTypedMap расширяет класс {@link CMap} проверяя при добавлении тип элемента.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CTypedMap.php 2999 2011-02-23 20:20:28Z alexander.makarow $
  * @package system.collections
  * @since 1.0
  */

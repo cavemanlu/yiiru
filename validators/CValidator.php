@@ -49,7 +49,6 @@
  * </ul>
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CValidator.php 3515 2011-12-28 12:29:24Z mdomba $
  * @package system.validators
  * @since 1.0
  */
@@ -102,6 +101,12 @@ abstract class CValidator extends CComponent
 	 */
 	public $on;
 	/**
+	 * @var array list of scenarios that the validator should not be applied to.
+	 * Each array value refers to a scenario name with the same name as its array key.
+	 * @since 1.1.11
+	 */
+	public $except;
+	/**
 	 * @var boolean должны ли атрибуты данного валидатора считаться безопасными для пакетного присваивания.
 	 * По умолчанию - false.
 	 * @since 1.1.4
@@ -147,6 +152,16 @@ abstract class CValidator extends CComponent
 		else
 			$on=array();
 
+		if(isset($params['except']))
+		{
+			if(is_array($params['except']))
+				$except=$params['except'];
+			else
+				$except=preg_split('/[\s,]+/',$params['except'],-1,PREG_SPLIT_NO_EMPTY);
+		}
+		else
+			$except=array();
+
 		if(method_exists($object,$name))
 		{
 			$validator=new CInlineValidator;
@@ -174,6 +189,7 @@ abstract class CValidator extends CComponent
 		}
 
 		$validator->on=empty($on) ? array() : array_combine($on,$on);
+		$validator->except=empty($except) ? array() : array_combine($except,$except);
 
 		return $validator;
 	}
@@ -227,6 +243,8 @@ abstract class CValidator extends CComponent
 	 */
 	public function applyTo($scenario)
 	{
+		if(isset($this->except[$scenario]))
+			return false;
 		return empty($this->on) || isset($this->on[$scenario]);
 	}
 

@@ -21,7 +21,7 @@ Yii::import('zii.widgets.jui.CJuiInputWidget');
  * 		'name'=>'submit',
  * 		'caption'=>'Сохранить',
  * 		'options'=>array(
- *         'onclick'=>'js:function(){alert("Да");}',
+ *         'onclick'=>new CJavaScriptExpression('function(){alert("Да");}'),
  *     ),
  * ));
  * </pre>
@@ -33,7 +33,7 @@ Yii::import('zii.widgets.jui.CJuiInputWidget');
  *			'name'=>'button',
  * 			'caption'=>'Сохранить',
  *			'value'=>'asd',
- *			'onclick'=>'js:function(){alert("Нажата кнопка сохранения"); this.blur(); return false;}',
+ *			'onclick'=>new CJavaScriptExpression('function(){alert("Нажата кнопка сохранения"); this.blur(); return false;}'),
  * 		)
  * );
  * </pre>
@@ -43,7 +43,6 @@ Yii::import('zii.widgets.jui.CJuiInputWidget');
  * за списком возможных опций (пар имя-значение).
  *
  * @author Sebastian Thierer <sebathi@gmail.com>
- * @version $Id: CJuiButton.php 2799 2011-01-01 19:31:13Z qiang.xue $
  * @package zii.widgets.jui
  * @since 1.1.3
  */
@@ -60,12 +59,16 @@ class CJuiButton extends CJuiInputWidget
 	 */
 	public $htmlTag = 'div';
 	/**
-	 * @var string url-адрес, используемый при нажатии на кнопку типа "link"
+	 * @var mixed URL-адрес или маршрут действия, который может быть
+	 * использован для создания URL-адреса. Используется при выбранном
+	 * buttonType "link". За подробностями об определении данного параметра
+	 * обратитесь к {@link normalizeUrl}
 	 */
 	public $url = null;
 
 	/**
-	 * @var mixed значение текущего элемента. Используется только для типов "radio" и "checkbox"
+	 * @var mixed значение текущего элемента. Используется только для типов
+	 * "radio" и "checkbox"
 	 */
 	public $value;
 
@@ -166,10 +169,10 @@ class CJuiButton extends CJuiInputWidget
 			}
 
 			$options=empty($this->options) ? '' : CJavaScript::encode($this->options);
-			if (isset($this->onclick))
+			if($this->onclick!==null)
 			{
-				if(strpos($this->onclick,'js:')!==0)
-				$this->onclick='js:'.$this->onclick;
+				if(!($this->onclick instanceof CJavaScriptExpression))
+					$this->onclick=new CJavaScriptExpression($this->onclick);
 				$click = CJavaScript::encode($this->onclick);
 				$cs->registerScript(__CLASS__.'#'.$id,"jQuery('#{$id}').button($options).click($click);");
 			}

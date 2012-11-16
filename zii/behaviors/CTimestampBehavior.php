@@ -24,7 +24,7 @@
  * 	);
  * }
  * </pre>
- * Свойства {@link createAttribute} {@link updateAttribute} по умолчанию имеют значения 'create_time' 'update_time',
+ * Свойства {@link createAttribute} и {@link updateAttribute} по умолчанию имеют значения 'create_time' 'update_time',
  * поэтому не обязательно их настраивать. Если вы не хотите, чтобы поведение CTimestampBehavior
  * устанавливало временную отметку при обновлении или создании записи, установите соответствующий атрибут в null.
  *
@@ -35,7 +35,6 @@
  * вы можете настроить это значение свойством {@link timestampExpression}
  *
  * @author Jonah Turnquist <poppitypop@gmail.com>
- * @version $Id: CTimestampBehavior.php 3229 2011-05-21 00:20:29Z alexander.makarow $
  * @package zii.behaviors
  * @since 1.1
  */
@@ -100,7 +99,7 @@ class CTimestampBehavior extends CActiveRecordBehavior {
 	protected function getTimestampByAttribute($attribute) {
 		if ($this->timestampExpression instanceof CDbExpression)
 			return $this->timestampExpression;
-		else if ($this->timestampExpression !== null)
+		elseif ($this->timestampExpression !== null)
 			return @eval('return '.$this->timestampExpression.';');
 
 		$columnType = $this->getOwner()->getTableSchema()->getColumn($attribute)->dbType;

@@ -19,7 +19,6 @@
  * Это значит, что если вы все еще хотите использовать данный компонент, то должны использовать eAccelerator версии 0.9.5.x или ниже.
  *
  * @author Steffen Dietz <steffo.dietz[at]googlemail[dot]com>
- * @version $Id: CEAcceleratorCache.php 3515 2011-12-28 12:29:24Z mdomba $
  * @package system.caching
  */
 class CEAcceleratorCache extends CCache

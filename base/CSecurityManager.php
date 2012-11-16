@@ -46,7 +46,6 @@
  * @property string $validation
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CSecurityManager.php 3555 2012-02-09 10:29:44Z mdomba $
  * @package system.base
  * @since 1.0
  */
@@ -312,7 +311,7 @@ class CSecurityManager extends CApplicationComponent
 	 * Возвращает длину переданной строки. Если доступно расширение "mbstring",
 	 * то использует функцию "mb_strlen", иначе - "strlen"
 	 * @param string $string строка, длина которой измеряется
-	 * @return int длина переданной строки
+	 * @return integer длина переданной строки
 	 */
 	private function strlen($string)
 	{
@@ -325,8 +324,8 @@ class CSecurityManager extends CApplicationComponent
 	 * "mb_substr", иначе - "substr"
 	 * @param string $string входная строка. Должна состоять как минимум из
 	 * одного символа
-	 * @param int $start стартовая позиция подстроки
-	 * @param int $length длина подстроки
+	 * @param integer $start стартовая позиция подстроки
+	 * @param integer $length длина подстроки
 	 * @return string подстрока; false - при ошибке или пустой строке
 	 */
 	private function substr($string,$start,$length)

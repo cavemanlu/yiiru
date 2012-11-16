@@ -26,22 +26,30 @@ class CConsoleCommandEvent extends CEvent
 	public $action;
 	/**
 	 * @var boolean должно ли действие быть выполнено. Если данное свойство
-	 * установлено в значение false обработчиком события, то действие
+	 * установлено в значение true обработчиком события, то действие
 	 * консольной команды прекратится после обработки данного события. Если
-	 * своуство установленов значение true, то продолжится обычный цикл
-	 * выполнения, включая выполнение действия и вызова метода
+	 * свойство установлено в значение false (по умолчанию), то продолжится
+	 * обычный цикл выполнения, включая выполнение действия и вызова метода
 	 * {@link CConsoleCommand::afterAction}
 	 */
 	public $stopCommand=false;
+	/**
+	 * @var integer exit code of application.
+	 * This property is available in {@link CConsoleCommand::onAfterAction} event and will be set to the exit code
+	 * returned by the console command action. You can set it to change application exit code.
+	 */
+	public $exitCode;
 
 	/**
 	 * Конструктор
 	 * @param mixed $sender объект, вызвавший событие
 	 * @param string $params параметры, передаваемые в метод действия
 	 * @param string $action имя действия
+	 * @param integer $exitCode the application exit code
 	 */
-	public function __construct($sender=null,$params=null,$action=null){
+	public function __construct($sender=null,$params=null,$action=null,$exitCode=0){
 		parent::__construct($sender,$params);
 		$this->action=$action;
+		$this->exitCode=$exitCode;
 	}
 }

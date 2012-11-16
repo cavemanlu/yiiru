@@ -19,10 +19,9 @@
  * их в сообщении журнала, что может помочь в выявлении/отладке встречающихся проблем.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CLogFilter.php 3515 2011-12-28 12:29:24Z mdomba $
  * @package system.logging
  */
-class CLogFilter extends CComponent
+class CLogFilter extends CComponent implements ILogFilter
 {
 	/**
 	 * @var boolean должен ли добавляться к каждому сообщению журнала префикс в

@@ -19,7 +19,6 @@
  * @property CDbCommandBuilder $commandBuilder построитель SQL-команд для данного соединения БД
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CDbSchema.php 3515 2011-12-28 12:29:24Z mdomba $
  * @package system.db.schema
  * @since 1.0
  */
@@ -338,7 +337,7 @@ abstract class CDbSchema extends CComponent
     {
     	if(isset($this->columnTypes[$type]))
     		return $this->columnTypes[$type];
-    	else if(($pos=strpos($type,' '))!==false)
+    	elseif(($pos=strpos($type,' '))!==false)
     	{
     		$t=substr($type,0,$pos);
     		return (isset($this->columnTypes[$t]) ? $this->columnTypes[$t] : $t).substr($type,$pos);

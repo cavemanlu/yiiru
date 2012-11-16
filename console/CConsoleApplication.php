@@ -42,7 +42,6 @@
  * (runner) команд
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CConsoleApplication.php 3426 2011-10-25 00:01:09Z alexander.makarow $
  * @package system.console
  * @since 1.0
  */
@@ -86,11 +85,14 @@ class CConsoleApplication extends CApplication
 
 	/**
 	 * Выполняет запрос пользователя.
-	 * Метод создает экземпляр консольного исполнителя (runner) команд для обработки частной пользовательской команды.
+	 * Метод использует экземпляр консольного исполнителя (runner) команд для обработки частной пользовательской команды.
+	 * Since version 1.1.11 this method will exit application with an exit code if one is returned by the user command.
 	 */
 	public function processRequest()
 	{
-		$this->_runner->run($_SERVER['argv']);
+		$exitCode=$this->_runner->run($_SERVER['argv']);
+		if(is_int($exitCode))
+			$this->end($exitCode);
 	}
 
 	/**

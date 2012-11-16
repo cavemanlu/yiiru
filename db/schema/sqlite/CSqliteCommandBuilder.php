@@ -12,7 +12,6 @@
  * Класс CSqliteCommandBuilder предоставляет базовые методы для создания команд запросов для таблиц базы данных SQLite.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CSqliteCommandBuilder.php 3515 2011-12-28 12:29:24Z mdomba $
  * @package system.db.schema.sqlite
  * @since 1.0
  */

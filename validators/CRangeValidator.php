@@ -13,7 +13,6 @@
  * Вы можете инвертировать логику валидации при помощи свойства {@link not} (доступно с версии 1.1.5).
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CRangeValidator.php 3120 2011-03-25 01:50:48Z qiang.xue $
  * @package system.validators
  * @since 1.0
  */
@@ -57,7 +56,7 @@ class CRangeValidator extends CValidator
 			$message=$this->message!==null?$this->message:Yii::t('yii','{attribute} is not in the list.');
 			$this->addError($object,$attribute,$message);
 		}
-		else if($this->not && in_array($value,$this->range,$this->strict))
+		elseif($this->not && in_array($value,$this->range,$this->strict))
 		{
 			$message=$this->message!==null?$this->message:Yii::t('yii','{attribute} is in the list.');
 			$this->addError($object,$attribute,$message);

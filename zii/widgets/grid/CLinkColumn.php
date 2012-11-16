@@ -18,7 +18,6 @@ Yii::import('zii.widgets.grid.CGridColumn');
  * В дополнение, если установлено свойство {@link imageUrl}, то будет сгенерирована ссылка-изображение.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CLinkColumn.php 3424 2011-10-24 20:13:19Z mdomba $
  * @package zii.widgets.grid
  * @since 1.1
  */

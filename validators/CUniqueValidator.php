@@ -21,7 +21,6 @@
  * </ul>
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CUniqueValidator.php 3549 2012-01-27 15:36:43Z qiang.xue $
  * @package system.validators
  * @since 1.0
  */
@@ -51,6 +50,11 @@ class CUniqueValidator extends CValidator
 	 */
 	public $attributeName;
 	/**
+	 * @var mixed additional query criteria. Either an array or CDbCriteria.
+	 * This will be combined with the condition that checks if the attribute
+	 * value exists in the corresponding table column.
+	 * This array will be used to instantiate a {@link CDbCriteria} object.
+	 
 	 * @var array дополнительный критерий запроса. Будет объединен с условием,
 	 * проверяющим существование значения атрибута в соответствующем столбце таблицы.
 	 * Данный массив будет использован для создания экземпляра {@link CDbCriteria}
@@ -90,12 +94,13 @@ class CUniqueValidator extends CValidator
 				array('{column}'=>$attributeName,'{table}'=>$table->name)));
 
 		$columnName=$column->rawName;
-		$criteria=new CDbCriteria(array(
-			'condition'=>$this->caseSensitive ? "$columnName=:value" : "LOWER($columnName)=LOWER(:value)",
-			'params'=>array(':value'=>$value),
-		));
+		$criteria=new CDbCriteria();
 		if($this->criteria!==array())
 			$criteria->mergeWith($this->criteria);
+		$tableAlias = empty($criteria->alias) ? $finder->getTableAlias(true) : $criteria->alias;
+		$valueParamName = CDbCriteria::PARAM_PREFIX.CDbCriteria::$paramCount++;
+		$criteria->addCondition($this->caseSensitive ? "{$tableAlias}.{$columnName}={$valueParamName}" : "LOWER({$tableAlias}.{$columnName})=LOWER({$valueParamName})");
+		$criteria->params[$valueParamName] = $value;
 
 		if(!$object instanceof CActiveRecord || $object->isNewRecord || $object->tableName()!==$finder->tableName())
 			$exists=$finder->exists($criteria);

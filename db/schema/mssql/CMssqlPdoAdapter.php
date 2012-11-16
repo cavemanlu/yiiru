@@ -12,7 +12,6 @@
  * Данный класс является расширением стандартного класса PDO для драйвера mssql.
  * Он предоставляет некоторый функционал pdo драйвера, отсутствующий в драйвере mssql
  * @author Christophe Boulain <Christophe.Boulain@gmail.com>
- * @version $Id: CMssqlPdoAdapter.php 3515 2011-12-28 12:29:24Z mdomba $
  * @package system.db.schema.mssql
  */
 class CMssqlPdoAdapter extends PDO
@@ -26,9 +25,7 @@ class CMssqlPdoAdapter extends PDO
 	 */
 	public function lastInsertId ($sequence=NULL)
 	{
-		$value=$this->query('SELECT SCOPE_IDENTITY()')->fetchColumn();
-		$value=preg_replace('/[,.]0+$/', '', $value); // issue 2312
-		return strtr($value,array(','=>'','.'=>''));
+        return $this->query('SELECT CAST(COALESCE(SCOPE_IDENTITY(), @@IDENTITY) AS bigint)')->fetchColumn();
 	}
 
 	/**

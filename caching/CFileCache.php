@@ -22,7 +22,6 @@
  * что означает 0.01% шанс
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CFileCache.php 3515 2011-12-28 12:29:24Z mdomba $
  * @package system.caching
  */
 class CFileCache extends CCache
@@ -49,9 +48,7 @@ class CFileCache extends CCache
 
 	/**
 	 * Инициализирует данный компонент приложения.
-	 * Метод требуется интерфейсом {@link IApplicationComponent}.
-	 * It checks the availability of memcache.
-	 * @throws CException if APC cache extension is not loaded or is disabled.
+	 * Метод требуется интерфейсом {@link IApplicationComponent}
 	 */
 	public function init()
 	{
@@ -110,7 +107,7 @@ class CFileCache extends CCache
 		$cacheFile=$this->getCacheFile($key);
 		if(($time=@filemtime($cacheFile))>time())
 			return @file_get_contents($cacheFile);
-		else if($time>0)
+		elseif($time>0)
 			@unlink($cacheFile);
 		return false;
 	}
@@ -197,10 +194,12 @@ class CFileCache extends CCache
 	}
 
 	/**
-	 * Удаляет файлы кэша с истекшим сроком годности.
-	 * @param boolean $expiredOnly удалять только файлы кэша с истекшим сроком годности.
-	 * Если true, будут удалены все файлы кэша в директории {@link cachePath}.
-	 * @param string $path путь для очистки. Если null, будет использоваться путь, заданный свойством {@link cachePath}.
+	 * Удаляет файлы кэша с истекшим сроком годности
+	 * @param boolean $expiredOnly удалять только файлы кэша с истекшим сроком
+	 * годности.
+	 * Если false, будут удалены все файлы кэша в директории {@link cachePath}
+	 * @param string $path путь для очистки. Если null, будет использоваться
+	 * путь, заданный свойством {@link cachePath}
 	 */
 	public function gc($expiredOnly=true,$path=null)
 	{
@@ -215,7 +214,7 @@ class CFileCache extends CCache
 			$fullPath=$path.DIRECTORY_SEPARATOR.$file;
 			if(is_dir($fullPath))
 				$this->gc($expiredOnly,$fullPath);
-			else if($expiredOnly && @filemtime($fullPath)<time() || !$expiredOnly)
+			elseif($expiredOnly && @filemtime($fullPath)<time() || !$expiredOnly)
 				@unlink($fullPath);
 		}
 		closedir($handle);

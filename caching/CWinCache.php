@@ -16,7 +16,6 @@
  * Обратитесь к документации {@link CCache} за информацией об обычных операциях кэша, поддерживаемых компонентом WinCache.
  *
  * @author Alexander Makarov <sam@rmcreative.ru>
- * @version $Id: CWinCache.php 2799 2011-01-01 19:31:13Z qiang.xue $
  * @package system.caching
  * @since 1.1.2
  */

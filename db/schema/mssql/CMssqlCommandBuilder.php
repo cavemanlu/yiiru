@@ -16,7 +16,6 @@
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @author Christophe Boulain <Christophe.Boulain@gmail.com>
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version $Id: CMssqlCommandBuilder.php 3515 2011-12-28 12:29:24Z mdomba $
  * @package system.db.schema.mssql
  */
 class CMssqlCommandBuilder extends CDbCommandBuilder
@@ -78,7 +77,7 @@ class CMssqlCommandBuilder extends CDbCommandBuilder
 					foreach($value->params as $n=>$v)
 						$values[$n]=$v;
 				}
-				else if($bindByPosition)
+				elseif($bindByPosition)
 				{
 					$fields[]=$column->rawName.'=?';
 					$values[]=$column->typecast($value);
@@ -163,14 +162,15 @@ class CMssqlCommandBuilder extends CDbCommandBuilder
 	 * <b>запятые НЕ</b> должны использоваться как часть выражения сортировки 
 	 * или идентификатора. Запятые могут исползоваться только в качестве разделителя
 	 * выражений сортировки;
-	 *  </li>
-	 *  <li>
+	 *   </li>
+	 *   <li>
 	 * в выражении ORDER BY имя столбца НЕ должно быть с именем таблицы или представления.
 	 * Используйте псевдоним столбца или столбце индекса;
-	 * </li>
-	 * <li>
+	 *   </li>
+	 *   <li>
 	 * за выражением ORDER BY не должно следовать других выражений, например COMPUTE или FOR.
-	 * </li>
+	 *   </li>
+	 * </ul>
 	 *
 	 * @param string $sql строка SQL-запроса
 	 * @param integer $limit максимальное количество строк, -1 для игнорирования лимита
@@ -181,11 +181,11 @@ class CMssqlCommandBuilder extends CDbCommandBuilder
 	 */
 	public function applyLimit($sql, $limit, $offset)
 	{
-		$limit = $limit!==null ? intval($limit) : -1;
-		$offset = $offset!==null ? intval($offset) : -1;
+		$limit = $limit!==null ? (int)$limit : -1;
+		$offset = $offset!==null ? (int)$offset : -1;
 		if ($limit > 0 && $offset <= 0) //just limit
 			$sql = preg_replace('/^([\s(])*SELECT( DISTINCT)?(?!\s*TOP\s*\()/i',"\\1SELECT\\2 TOP $limit", $sql);
-		else if($limit > 0 && $offset > 0)
+		elseif($limit > 0 && $offset > 0)
 			$sql = $this->rewriteLimitOffsetSql($sql, $limit,$offset);
 		return $sql;
 	}
@@ -197,7 +197,7 @@ class CMssqlCommandBuilder extends CDbCommandBuilder
 	 * @param string $sql SQL-запрос
 	 * @param integer $limit $limit > 0
 	 * @param integer $offset $offset > 0
-	 * @return sql измененный SQL-запрос с параметрами limit и offset
+	 * @return string измененный SQL-запрос с параметрами limit и offset
 	 *
 	 * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
 	 */
@@ -306,7 +306,7 @@ class CMssqlCommandBuilder extends CDbCommandBuilder
 	 * Проверяет, имеет ли критерий выражение ORDER BY при наличии смещения или лимита строк (offset/limit).
 	 * @param CMssqlTableSchema $table схема таблицы
 	 * @param CDbCriteria $criteria критерий
-	 * @return CDbCrireria измененный критерий
+	 * @return CDbCriteria измененный критерий
 	 */
 	protected function checkCriteria($table, $criteria)
 	{

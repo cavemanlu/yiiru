@@ -30,7 +30,6 @@
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CDateFormatter.php 2798 2011-01-01 19:29:03Z qiang.xue $
  * @package system.i18n
  * @since 1.0
  */
@@ -74,7 +73,7 @@ class CDateFormatter extends CComponent
 	{
 		if(is_string($locale))
 			$this->_locale=CLocale::getInstance($locale);
-		else
+		elseif
 			$this->_locale=$locale;
 	}
 
@@ -82,15 +81,18 @@ class CDateFormatter extends CComponent
 	 * Форматирует дату/время согласно настроенному шаблону
 	 * @param string $pattern шаблон (см. {@link http://www.unicode.org/reports/tr35/#Date_Format_Patterns})
 	 * @param mixed $time временная отметка в формате UNIX или строка в формате, понятном функции strtotime
-	 * @return string отформатированные дата/время
+	 * @return string отформатированные дата/время. Null, если параметр $time равен null (проверка с версии 1.1.11)
 	 */
 	public function format($pattern,$time)
 	{
+		if($time===null)
+			return null;
+
 		if(is_string($time))
 		{
-			if(ctype_digit($time))
+			if(ctype_digit($time) || ($time{0}=='-' && ctype_digit(substr($time, 1))))
 				$time=(int)$time;
-			else
+			elseif
 				$time=strtotime($time);
 		}
 		$date=CTimestamp::getDate($time,false,false);
@@ -126,9 +128,9 @@ class CDateFormatter extends CComponent
 			$dateTimePattern=$this->_locale->getDateTimeFormat();
 			return strtr($dateTimePattern,array('{0}'=>$time,'{1}'=>$date));
 		}
-		else if(isset($date))
+		elseif if(isset($date))
 			return $date;
-		else if(isset($time))
+		elseif if(isset($time))
 			return $time;
 	}
 
@@ -156,21 +158,21 @@ class CDateFormatter extends CComponent
 					$tokens[]="'";
 					$i++;
 				}
-				else if($isLiteral)
+				elseif if($isLiteral)
 				{
 					$tokens[]=$literal;
 					$literal='';
 					$isLiteral=false;
 				}
-				else
+				elseif
 				{
 					$isLiteral=true;
 					$literal='';
 				}
 			}
-			else if($isLiteral)
+			elseif if($isLiteral)
 				$literal.=$c;
-			else
+			elseif
 			{
 				for($j=$i+1;$j<$n;++$j)
 				{
@@ -180,7 +182,7 @@ class CDateFormatter extends CComponent
 				$p=str_repeat($c,$j-$i);
 				if(isset(self::$_formatters[$c]))
 					$tokens[]=array(self::$_formatters[$c],$p);
-				else
+				elseif
 					$tokens[]=$p;
 				$i=$j-1;
 			}
@@ -204,7 +206,7 @@ class CDateFormatter extends CComponent
 		$year=$date['year'];
 		if($pattern==='yy')
 			return str_pad($year%100,2,'0',STR_PAD_LEFT);
-		else
+		elseif
 			return str_pad($year,strlen($pattern),'0',STR_PAD_LEFT);
 	}
 
@@ -261,9 +263,9 @@ class CDateFormatter extends CComponent
 		$day=$date['mday'];
 		if($pattern==='d')
 			return $day;
-		else if($pattern==='dd')
+		elseif if($pattern==='dd')
 			return str_pad($day,2,'0',STR_PAD_LEFT);
-		else
+		elseif
 			throw new CException(Yii::t('yii','The pattern for day of the month must be "d" or "dd".'));
 	}
 
@@ -278,7 +280,7 @@ class CDateFormatter extends CComponent
 		$day=$date['yday'];
 		if(($n=strlen($pattern))<=3)
 			return str_pad($day,$n,'0',STR_PAD_LEFT);
-		else
+		elseif
 			throw new CException(Yii::t('yii','The pattern for day in year must be "D", "DD" or "DDD".'));
 	}
 
@@ -295,7 +297,7 @@ class CDateFormatter extends CComponent
 	{
 		if($pattern==='F')
 			return (int)(($date['mday']+6)/7);
-		else
+		elseif
 			throw new CException(Yii::t('yii','The pattern for day in month must be "F".'));
 	}
 
@@ -352,10 +354,10 @@ class CDateFormatter extends CComponent
 		{
 			if(intval($date['hours']/12))
 				return $this->_locale->getPMName();
-			else
+			elseif
 				return $this->_locale->getAMName();
 		}
-		else
+		elseif
 			throw new CException(Yii::t('yii','The pattern for AM/PM marker must be "a".'));
 	}
 
@@ -371,9 +373,9 @@ class CDateFormatter extends CComponent
 		$hour=$date['hours'];
 		if($pattern==='H')
 			return $hour;
-		else if($pattern==='HH')
+		elseif if($pattern==='HH')
 			return str_pad($hour,2,'0',STR_PAD_LEFT);
-		else
+		elseif
 			throw new CException(Yii::t('yii','The pattern for 24 hour format must be "H" or "HH".'));
 	}
 
@@ -390,9 +392,9 @@ class CDateFormatter extends CComponent
 		$hour=($hour==12|$hour==0)?12:($hour)%12;
 		if($pattern==='h')
 			return $hour;
-		else if($pattern==='hh')
+		elseif if($pattern==='hh')
 			return str_pad($hour,2,'0',STR_PAD_LEFT);
-		else
+		elseif
 			throw new CException(Yii::t('yii','The pattern for 12 hour format must be "h" or "hh".'));
 	}
 
@@ -408,9 +410,9 @@ class CDateFormatter extends CComponent
 		$hour=$date['hours']==0?24:$date['hours'];
 		if($pattern==='k')
 			return $hour;
-		else if($pattern==='kk')
+		elseif if($pattern==='kk')
 			return str_pad($hour,2,'0',STR_PAD_LEFT);
-		else
+		elseif
 			throw new CException(Yii::t('yii','The pattern for hour in day must be "k" or "kk".'));
 	}
 
@@ -426,9 +428,9 @@ class CDateFormatter extends CComponent
 		$hour=$date['hours']%12;
 		if($pattern==='K')
 			return $hour;
-		else if($pattern==='KK')
+		elseif if($pattern==='KK')
 			return str_pad($hour,2,'0',STR_PAD_LEFT);
-		else
+		elseif
 			throw new CException(Yii::t('yii','The pattern for hour in AM/PM must be "K" or "KK".'));
 	}
 
@@ -444,9 +446,9 @@ class CDateFormatter extends CComponent
 		$minutes=$date['minutes'];
 		if($pattern==='m')
 			return $minutes;
-		else if($pattern==='mm')
+		elseif if($pattern==='mm')
 			return str_pad($minutes,2,'0',STR_PAD_LEFT);
-		else
+		elseif
 			throw new CException(Yii::t('yii','The pattern for minutes must be "m" or "mm".'));
 	}
 
@@ -462,9 +464,9 @@ class CDateFormatter extends CComponent
 		$seconds=$date['seconds'];
 		if($pattern==='s')
 			return $seconds;
-		else if($pattern==='ss')
+		elseif if($pattern==='ss')
 			return str_pad($seconds,2,'0',STR_PAD_LEFT);
-		else
+		elseif
 			throw new CException(Yii::t('yii','The pattern for seconds must be "s" or "ss".'));
 	}
 
@@ -478,7 +480,7 @@ class CDateFormatter extends CComponent
 	{
 		if($pattern==='w')
 			return @date('W',@mktime(0,0,0,$date['mon'],$date['mday'],$date['year']));
-		else
+		elseif
 			throw new CException(Yii::t('yii','The pattern for week in year must be "w".'));
 	}
 
@@ -492,7 +494,7 @@ class CDateFormatter extends CComponent
 	{
 		if($pattern==='W')
 			return @date('W',@mktime(0,0,0,$date['mon'], $date['mday'],$date['year']))-date('W', mktime(0,0,0,$date['mon'],1,$date['year']))+1;
-		else
+		elseif
 			throw new CException(Yii::t('yii','The pattern for week in month must be "W".'));
 	}
 
@@ -507,9 +509,9 @@ class CDateFormatter extends CComponent
 	{
 		if($pattern[0]==='z' || $pattern[0]==='v')
 			return @date('T', @mktime($date['hours'], $date['minutes'], $date['seconds'], $date['mon'], $date['mday'], $date['year']));
-		elseif($pattern[0]==='Z')
+		elseifif($pattern[0]==='Z')
 			return @date('O', @mktime($date['hours'], $date['minutes'], $date['seconds'], $date['mon'], $date['mday'], $date['year']));
-		else
+		elseif
 			throw new CException(Yii::t('yii','The pattern for time zone must be "z" or "v".'));
 	}
 

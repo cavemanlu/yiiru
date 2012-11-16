@@ -34,6 +34,8 @@
  * }
  * </pre>
  *
+ * Since version 1.1.11 the return value of action methods will be used as application exit code if it is an integer value.
+ 
  * @property string $name имя команды
  * @property CConsoleCommandRunner $commandRunner экземпляр исполнителя
  * (runner) команды
@@ -44,7 +46,6 @@
  * действия
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CConsoleCommand.php 3598 2012-02-19 21:22:09Z qiang.xue@gmail.com $
  * @package system.console
  * @since 1.0
  */
@@ -115,6 +116,8 @@ abstract class CConsoleCommand extends CComponent
 	 * Реализация по умолчанию определяет входные параметры и отправляет запрос
 	 * команды в подходящее действие с соответствующими значениями параметров
 	 * @param array $args параметры командной строки для данной команды
+	 * @return integer application exit code, which is returned by the invoked action. 0 if the action did not return anything.
+	 * (return value is available since version 1.1.11)
 	 */
 	public function run($args)
 	{
@@ -133,14 +136,14 @@ abstract class CConsoleCommand extends CComponent
 			{
 				if($param->isArray())
 					$params[]=is_array($options[$name]) ? $options[$name] : array($options[$name]);
-				else if(!is_array($options[$name]))
+				elseif(!is_array($options[$name]))
 					$params[]=$options[$name];
 				else
 					$this->usageError("Option --$name requires a scalar. Array is given.");
 			}
-			else if($name==='args')
+			elseif($name==='args')
 				$params[]=$args;
-			else if($param->isDefaultValueAvailable())
+			elseif($param->isDefaultValueAvailable())
 				$params[]=$param->getDefaultValue();
 			else
 				$this->usageError("Missing required option --$name.");
@@ -168,11 +171,13 @@ abstract class CConsoleCommand extends CComponent
 		if(!empty($options))
 			$this->usageError("Unknown options: ".implode(', ',array_keys($options)));
 
+		$exitCode=0;
 		if($this->beforeAction($action,$params))
 		{
-			$method->invokeArgs($this,$params);
-			$this->afterAction($action,$params);
+			$exitCode=$method->invokeArgs($this,$params);
+			$exitCode=$this->afterAction($action,$params,is_int($exitCode)?$exitCode:0);
 		}
+		return $exitCode;
 	}
 
 	/**
@@ -201,11 +206,15 @@ abstract class CConsoleCommand extends CComponent
 	 * Вы можете переопределить данный метод для выполнения некоторых постопераций для действия
 	 * @param string $action имя действия
 	 * @param array $params параметры, передаваемые в метод действия
+	 * @param integer $exitCode the application exit code returned by the action method.
+	 * @return integer application exit code (return value is available since version 1.1.11)
 	 */
-	protected function afterAction($action,$params)
+	protected function afterAction($action,$params,$exitCode=0)
 	{
+		$event=new CConsoleCommandEvent($this,$params,$action,$exitCode);
 		if($this->hasEventHandler('onAfterAction'))
-			$this->onAfterAction(new CConsoleCommandEvent($this, $params, $action));
+			$this->onAfterAction($event);
+		return $event->exitCode;
 	}
 
 	/**
@@ -233,7 +242,7 @@ abstract class CConsoleCommand extends CComponent
 				else
 					$options[$name]=$value;
 			}
-			else if(isset($action))
+			elseif(isset($action))
 				$params[]=$arg;
 			else
 				$action=$arg;
@@ -382,9 +391,9 @@ abstract class CConsoleCommand extends CComponent
 					$answer=trim(fgets(STDIN));
 					if(!strncasecmp($answer,'q',1))
 						return;
-					else if(!strncasecmp($answer,'y',1))
+					elseif(!strncasecmp($answer,'y',1))
 						echo "  overwrite $name\n";
-					else if(!strncasecmp($answer,'a',1))
+					elseif(!strncasecmp($answer,'a',1))
 					{
 						echo "  overwrite $name\n";
 						$overwriteAll=true;
@@ -413,22 +422,27 @@ abstract class CConsoleCommand extends CComponent
 	 * @param string $sourceDir исходная директория
 	 * @param string $targetDir целевая директория
 	 * @param string $baseDir базовая директория
+	 * @param array $ignoreFiles list of the names of files that should
+	 * be ignored in list building process. Argument available since 1.1.11.
+	 * @param array $renameMap hash array of file names that should be
+	 * renamed. Example value: array('1.old.txt'=>'2.new.txt').
+	 * Argument available since 1.1.11.
 	 * @return array список файлов (см. {@link copyFiles})
 	 */
-	public function buildFileList($sourceDir, $targetDir, $baseDir='')
+	public function buildFileList($sourceDir, $targetDir, $baseDir='', $ignoreFiles=array(), $renameMap=array())
 	{
 		$list=array();
 		$handle=opendir($sourceDir);
 		while(($file=readdir($handle))!==false)
 		{
-			if($file==='.' || $file==='..' || $file==='.svn' ||$file==='.gitignore')
+			if(in_array($file,array('.','..','.svn','.gitignore')) || in_array($file,$ignoreFiles))
 				continue;
 			$sourcePath=$sourceDir.DIRECTORY_SEPARATOR.$file;
-			$targetPath=$targetDir.DIRECTORY_SEPARATOR.$file;
+			$targetPath=$targetDir.DIRECTORY_SEPARATOR.strtr($file,$renameMap);
 			$name=$baseDir===''?$file : $baseDir.'/'.$file;
 			$list[$name]=array('source'=>$sourcePath, 'target'=>$targetPath);
 			if(is_dir($sourcePath))
-				$list=array_merge($list,$this->buildFileList($sourcePath,$targetPath,$name));
+				$list=array_merge($list,$this->buildFileList($sourcePath,$targetPath,$name,$ignoreFiles,$renameMap));
 		}
 		closedir($handle);
 		return $list;
@@ -512,22 +526,36 @@ abstract class CConsoleCommand extends CComponent
 	 * установлено
 	 *
 	 * @param string $message выводимое сообщение при ожидании пользовательского ответа
+	 * @param string $default the default string to be returned when user does not write anything.
+	 * Defaults to null, means that default string is disabled. This parameter is available since version 1.1.11.
 	 * @return mixed считанная строка или false, если ввод данных был закрыт (?)
 	 *
 	 * @since 1.1.9
 	 */
-	public function prompt($message)
+	public function prompt($message,$default=null)
 	{
+		if($default!==null)
+			$message.=" [$default] ";
+		else
+			$message.=' ';
+
 		if(extension_loaded('readline'))
 		{
-			$input = readline($message.' ');
-			readline_add_history($input);
-			return $input;
+			$input=readline($message);
+			if($input!==false)
+				readline_add_history($input);
 		}
 		else
 		{
-			echo $message.' ';
-			return trim(fgets(STDIN));
+			echo $message;
+			$input=fgets(STDIN);
+		}
+
+		if($input===false)
+			return false;
+		else{
+			$input=trim($input);
+			return ($input==='' && $default!==null) ? $default : $input;
 		}
 	}
 
@@ -536,14 +564,17 @@ abstract class CConsoleCommand extends CComponent
 	 * "n" (выполнить или отменить соответственно)
 	 *
 	 * @param string $message выводимое сообщение при ожидании пользовательского ответа
-	 * @return bool подтвердил ли пользователь выполнение
+	 * @param boolean $default this value is returned if no selection is made. This parameter has been available since version 1.1.11.
+	 * @return boolean подтвердил ли пользователь выполнение
 	 *
 	 * @since 1.1.9
 	 */
-	public function confirm($message)
+	public function confirm($message,$default=false)
 	{
-		echo $message.' [yes|no] ';
-		return !strncasecmp(trim(fgets(STDIN)),'y',1);
+		echo $message.' (yes|no) [' . ($default ? 'yes' : 'no') . ']:';
+
+		$input = trim(fgets(STDIN));
+		return empty($input) ? $default : !strncasecmp($input,'y',1);
 	}
 
 	/**

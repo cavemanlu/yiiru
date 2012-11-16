@@ -25,7 +25,7 @@
  * }
  * catch(Exception $e)
  * {
- *    $transaction->rollBack();
+ *    $transaction->rollback();
  * }
  * </pre>
  *
@@ -33,7 +33,6 @@
  * @property boolean $active активна ли данная транзакция
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CDbTransaction.php 3426 2011-10-25 00:01:09Z alexander.makarow $
  * @package system.db
  * @since 1.0
  */

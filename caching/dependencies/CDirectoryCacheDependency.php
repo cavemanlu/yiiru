@@ -24,7 +24,6 @@
  * включает в себя доступ ко времени модификации многих файлов в директории.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CDirectoryCacheDependency.php 3500 2011-12-20 16:25:43Z mdomba $
  * @package system.caching.dependencies
  * @since 1.0
  */

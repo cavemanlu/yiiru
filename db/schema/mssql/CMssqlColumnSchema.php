@@ -14,11 +14,25 @@
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @author Christophe Boulain <Christophe.Boulain@gmail.com>
- * @version $Id: CMssqlColumnSchema.php 3515 2011-12-28 12:29:24Z mdomba $
  * @package system.db.schema.mssql
  */
 class CMssqlColumnSchema extends CDbColumnSchema
 {
+	/**
+	 * Инициализирует столбец типом в БД и значением по умолчанию.
+	 * Устанавливает тип столбца в PHP-скриптах, размер, точность, масштаб
+	 * соответствующими значению по умолчанию
+	 * @param string $dbType тип столбца в БД
+	 * @param mixed $defaultValue значение по умолчанию
+     */
+     public function init($dbType, $defaultValue)
+     {
+        if ($defaultValue=='(NULL)')
+        {
+            $defaultValue=null;
+        }
+        parent::init($dbType, $defaultValue);
+     }
 	/**
 	 * Устанавливает тип столбца в PHP-скриптах по типу в БД
 	 * @param string $dbType тип столбца в БД
@@ -27,9 +41,9 @@ class CMssqlColumnSchema extends CDbColumnSchema
 	{
 		if(strpos($dbType,'float')!==false || strpos($dbType,'real')!==false)
 			$this->type='double';
-		else if(strpos($dbType,'bigint')===false && (strpos($dbType,'int')!==false || strpos($dbType,'smallint')!==false || strpos($dbType,'tinyint')))
+		elseif(strpos($dbType,'bigint')===false && (strpos($dbType,'int')!==false || strpos($dbType,'smallint')!==false || strpos($dbType,'tinyint')))
 			$this->type='integer';
-		else if(strpos($dbType,'bit')!==false)
+		elseif(strpos($dbType,'bit')!==false)
 			$this->type='boolean';
 		else
 			$this->type='string';

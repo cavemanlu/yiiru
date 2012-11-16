@@ -35,7 +35,6 @@
  * Получить доступ к нему можно методом {@link CApplication::getStatePersister()}.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CStatePersister.php 3515 2011-12-28 12:29:24Z mdomba $
  * @package system.base
  * @since 1.0
  */
@@ -82,7 +81,7 @@ class CStatePersister extends CApplicationComponent implements IStatePersister
 			$cacheKey='Yii.CStatePersister.'.$stateFile;
 			if(($value=$cache->get($cacheKey))!==false)
 				return unserialize($value);
-			else if(($content=@file_get_contents($stateFile))!==false)
+			elseif(($content=@file_get_contents($stateFile))!==false)
 			{
 				$cache->set($cacheKey,$content,0,new CFileCacheDependency($stateFile));
 				return unserialize($content);
@@ -90,7 +89,7 @@ class CStatePersister extends CApplicationComponent implements IStatePersister
 			else
 				return null;
 		}
-		else if(($content=@file_get_contents($stateFile))!==false)
+		elseif(($content=@file_get_contents($stateFile))!==false)
 			return unserialize($content);
 		else
 			return null;

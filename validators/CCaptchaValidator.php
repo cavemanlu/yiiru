@@ -14,7 +14,6 @@
  * CCaptchaValidator должен использоваться с компонентом {@link CCaptchaAction}.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CCaptchaValidator.php 3124 2011-03-25 15:48:05Z qiang.xue $
  * @package system.validators
  * @since 1.0
  */

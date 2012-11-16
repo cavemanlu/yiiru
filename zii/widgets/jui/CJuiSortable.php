@@ -30,15 +30,16 @@ Yii::import('zii.widgets.jui.CJuiWidget');
  * ));
  * </pre>
  *
- * Настройкой свойства {@link options} можно определить опции, передаваемые в плагин сортировки.
- * Обратитесь к {@link http://jqueryui.com/demos/sortable/ документации о плагине сортировки JUI}
+ * Настройкой свойства {@link options} можно определить опции, передаваемые в
+ * плагин сортировки. Обратитесь к
+ * {@link http://jqueryui.com/demos/sortable/ документации о плагине сортировки JUI}
  * за списком возможных опций (пар имя-значение).
  *
- * Если вы используете javascript-код в каком-либо любом месте кода, добавьте "js:" в
- * начало определения js-кода и Yii будет использовать эту строку как код JS.
+ * Если вы используете javascript-выражение в каком-либо любом месте кода,
+ * заключите это выражение в {@link CJavaScriptExpression} и Yii будет
+ * использовать это выражение как код JS.
  * 
  * @author Sebastian Thierer <sebathi@gmail.com>
- * @version $Id: CJuiSortable.php 3217 2011-05-12 23:59:50Z alexander.makarow $
  * @package zii.widgets.jui
  * @since 1.1
  */

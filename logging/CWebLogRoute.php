@@ -15,7 +15,6 @@
  * в окне консоли FireBug (если свойство {@link showInFireBug} установлено в true).
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CWebLogRoute.php 3588 2012-02-17 21:44:26Z qiang.xue@gmail.com $
  * @package system.logging
  * @since 1.0
  */
@@ -45,6 +44,11 @@ class CWebLogRoute extends CLogRoute
 	 * @since 1.1.11
 	 */
 	public $ignoreFlashInFireBug=true;
+	/**
+	 * @var boolean whether the log should be collapsed by default in Firebug. Defaults to false.
+	 * @since 1.1.13.
+	 */
+	public $collapsedInFireBug=false;
 
 	/**
 	 * Отображает сообщения журнала.
@@ -74,7 +78,7 @@ class CWebLogRoute extends CLogRoute
 				return;
 			$view.='-firebug';
 		}
-		else if(!($app instanceof CWebApplication) || $isAjax || $isFlash)
+		elseif(!($app instanceof CWebApplication) || $isAjax || $isFlash)
 			return;
 
 		$viewFile=YII_PATH.DIRECTORY_SEPARATOR.'views'.DIRECTORY_SEPARATOR.$view.'.php';

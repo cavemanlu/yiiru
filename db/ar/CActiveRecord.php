@@ -43,7 +43,6 @@
  * @property string $tableAlias псевдоним таблицы по умолчанию
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CActiveRecord.php 3533 2012-01-08 22:07:55Z mdomba $
  * @package system.db.ar
  * @since 1.0
  */
@@ -147,11 +146,11 @@ abstract class CActiveRecord extends CModel
 	{
 		if(isset($this->_attributes[$name]))
 			return $this->_attributes[$name];
-		else if(isset($this->getMetaData()->columns[$name]))
+		elseif(isset($this->getMetaData()->columns[$name]))
 			return null;
-		else if(isset($this->_related[$name]))
+		elseif(isset($this->_related[$name]))
 			return $this->_related[$name];
-		else if(isset($this->getMetaData()->relations[$name]))
+		elseif(isset($this->getMetaData()->relations[$name]))
 			return $this->getRelated($name);
 		else
 			return parent::__get($name);
@@ -185,11 +184,11 @@ abstract class CActiveRecord extends CModel
 	{
 		if(isset($this->_attributes[$name]))
 			return true;
-		else if(isset($this->getMetaData()->columns[$name]))
+		elseif(isset($this->getMetaData()->columns[$name]))
 			return false;
-		else if(isset($this->_related[$name]))
+		elseif(isset($this->_related[$name]))
 			return true;
-		else if(isset($this->getMetaData()->relations[$name]))
+		elseif(isset($this->getMetaData()->relations[$name]))
 			return $this->getRelated($name)!==null;
 		else
 			return parent::__isset($name);
@@ -205,7 +204,7 @@ abstract class CActiveRecord extends CModel
 	{
 		if(isset($this->getMetaData()->columns[$name]))
 			unset($this->_attributes[$name]);
-		else if(isset($this->getMetaData()->relations[$name]))
+		elseif(isset($this->getMetaData()->relations[$name]))
 			unset($this->_related[$name]);
 		else
 			parent::__unset($name);
@@ -248,8 +247,8 @@ abstract class CActiveRecord extends CModel
 	 * @param string $name имя связи (см. {@link relations})
 	 * @param boolean $refresh перезагружать ли связанные объекты из базы
 	 * данных. По умолчанию - false
-	 * @param array $params дополнительные параметры, настраивающие условия
-	 * запроса как это определено в описании связи
+	 * @param mixed $params массив или объект CDbCriteria с дополнительными
+	 * параметрами условия запроса как это определено в описании связи
 	 * @return mixed связанный(е) объект(ы)
 	 * @throws CDbException вызывается, если связь не определена в {@link relations списке связей}
 	 */
@@ -273,6 +272,10 @@ abstract class CActiveRecord extends CModel
 			$exists=isset($this->_related[$name]) || array_key_exists($name,$this->_related);
 			if($exists)
 				$save=$this->_related[$name];
+
+			if($params instanceof CDbCriteria)
+				$params = $params->toArray();
+			
 			$r=array($name=>$params);
 		}
 		else
@@ -286,7 +289,7 @@ abstract class CActiveRecord extends CModel
 		{
 			if($relation instanceof CHasManyRelation)
 				$this->_related[$name]=array();
-			else if($relation instanceof CStatRelation)
+			elseif($relation instanceof CStatRelation)
 				$this->_related[$name]=$relation->defaultValue;
 			else
 				$this->_related[$name]=null;
@@ -362,15 +365,20 @@ abstract class CActiveRecord extends CModel
 	}
 
 	/**
-	 * Сбрасывает все примененные группы условий и критерии, включая группу
-	 * условий по умолчанию
+	 * Сбрасывает все примененные группы условий и критерии
 	 *
+	 * @param boolean $resetDefault включать ли группу условий по умолчанию.
+	 * Данный параметр доступен с версии 1.1.12
 	 * @return CActiveRecord данный AR-объект
 	 * @since 1.1.2
 	 */
-	public function resetScope()
+	public function resetScope($resetDefault=true)
 	{
-		$this->_c=new CDbCriteria();
+		if($resetDefault)
+			$this->_c=new CDbCriteria();
+		else
+			$this->_c=null;
+
 		return $this;
 	}
 
@@ -476,13 +484,13 @@ abstract class CActiveRecord extends CModel
 	 *
 	 * Каждая связь определяется в данном методе в виде массива следующей структуры:
 	 * <pre>
-	 * 'varName'=>array('relationType', 'className', 'foreign_key', ...дополнительные опции)
+	 * 'varName'=>array('relationType', 'className', 'foreignKey', ...дополнительные опции)
 	 * </pre>,
 	 * где 'varName' - имя свойства, через которое доступен связанный объект
 	 * (или объекты); 'relationType' - тип связи, может быть значением одной из
 	 * следующих констант: self::BELONGS_TO, self::HAS_ONE, self::HAS_MANY и
 	 * self::MANY_MANY; 'className' - имя active record-класса связанного
-	 * объекта (объектов); 'foreign_key' - внешний ключ, по которому происходит
+	 * объекта (объектов); 'foreignKey' - внешний ключ, по которому происходит
 	 * связь между AR-объектами. Примечание: для составного ключа имена
 	 * столбцов могут быть либо перечислены в одной строке и разделены
 	 * запятыми, либо записаны в массив вида array('key1','key2'). В случае,
@@ -624,7 +632,7 @@ abstract class CActiveRecord extends CModel
 		$labels=$this->attributeLabels();
 		if(isset($labels[$attribute]))
 			return $labels[$attribute];
-		else if(strpos($attribute,'.')!==false)
+		elseif(strpos($attribute,'.')!==false)
 		{
 			$segs=explode('.',$attribute);
 			$name=array_pop($segs);
@@ -719,7 +727,7 @@ abstract class CActiveRecord extends CModel
 	{
 		if(property_exists($this,$name))
 			return $this->$name;
-		else if(isset($this->_attributes[$name]))
+		elseif(isset($this->_attributes[$name]))
 			return $this->_attributes[$name];
 	}
 
@@ -736,7 +744,7 @@ abstract class CActiveRecord extends CModel
 	{
 		if(property_exists($this,$name))
 			$this->$name=$value;
-		else if(isset($this->getMetaData()->columns[$name]))
+		elseif(isset($this->getMetaData()->columns[$name]))
 			$this->_attributes[$name]=$value;
 		else
 			return false;
@@ -768,7 +776,7 @@ abstract class CActiveRecord extends CModel
 					$this->_related[$name][$index]=$record;
 			}
 		}
-		else if(!isset($this->_related[$name]))
+		elseif(!isset($this->_related[$name]))
 			$this->_related[$name]=$record;
 	}
 
@@ -789,7 +797,7 @@ abstract class CActiveRecord extends CModel
 		{
 			if(property_exists($this,$name))
 				$attributes[$name]=$this->$name;
-			else if($names===true && !isset($attributes[$name]))
+			elseif($names===true && !isset($attributes[$name]))
 				$attributes[$name]=null;
 		}
 		if(is_array($names))
@@ -906,12 +914,23 @@ abstract class CActiveRecord extends CModel
 	}
 
 	/**
-	 * Данное событие вызывается перед вызовом метода поиска записей. В данном
+	 * Данное событие вызывается перед вызовом метода поиска записей.
+	 * This can be either a call to CActiveRecords find methods or a find call
+	 * when model is loaded in relational context via lazy or eager loading.
+	 * If you want to access or modify the query criteria used for the
+	 * find call, you can use {@link getDbCriteria()} to customize it based on your needs.
+	 * When modifying criteria in beforeFind you have to make sure you are using the right
+	 * table alias which is different on normal find and relational call.
+	 * You can use {@link getTableAlias()} to get the alias used for the upcoming find call.
+	 * Please note that modification of criteria is fully supported as of version 1.1.13.
+	 * Earlier versions had some problems with relational context and applying changes correctly.
+[[[[	 В данном
 	 * событии свойство {@link CModelEvent::criteria} содержит критерий
 	 * запроса, передаваемый параметром в соответствующий метод поиска. Для
 	 * доступа к критерию запроса, определенному в группах условий используется
 	 * метод {@link getDbCriteria()}. Можно изменять критерий так, как это
 	 * необходимо
+]]]]
 	 * @param CModelEvent $event параметр события
 	 * @see beforeFind
 	 */
@@ -1002,21 +1021,18 @@ abstract class CActiveRecord extends CModel
 	/**
 	 * Данный метод вызывается перед выполнением метода поиска записей. Список
 	 * методов поиска - {@link find}, {@link findAll}, {@link findByPk},
-	 * {@link findAllByPk}, {@link findByAttributes} и
-	 * {@link findAllByAttributes}. Реализация по умолчанию вызывает событие
-	 * {@link onBeforeFind}. При переопределении метода для правильного вызова
-	 * событий необходимо убедиться, что родительская реализация вызывается в
-	 * данном методе. Начиная с версии 1.1.5 данный метод может быть вызван со
-	 * скрытым параметром {@link CDbCriteria}, представляющим текущий критерий
-	 * запроса в качестве передаваемого в метод поиска параметра
+	 * {@link findAllByPk}, {@link findByAttributes},
+	 * {@link findAllByAttributes}, {@link findBySql} и {@link findAllBySql}.
+	 * Реализация по умолчанию вызывает событие {@link onBeforeFind}. При
+	 * переопределении метода для правильного вызова событий необходимо
+	 * убедиться, что родительская реализация вызывается в данном методе.
+	 * For details on modifying query criteria see {@link onBeforeFind} event.
 	 */
 	protected function beforeFind()
 	{
 		if($this->hasEventHandler('onBeforeFind'))
 		{
 			$event=new CModelEvent($this);
-			// для обратной совместимости
-			$event->criteria=func_num_args()>0 ? func_get_arg(0) : null;
 			$this->onBeforeFind($event);
 		}
 	}
@@ -1064,7 +1080,7 @@ abstract class CActiveRecord extends CModel
 	 * null, т.е., сохраняются все атрибуты, загруженные из БД
 	 * @return boolean являются ли атрибуты валидными и успешно ли вставлена
 	 * запись в БД
-	 * @throws CException вызывается, если запись не является новой
+	 * @throws CDbException вызывается, если запись не является новой
 	 */
 	public function insert($attributes=null)
 	{
@@ -1083,7 +1099,7 @@ abstract class CActiveRecord extends CModel
 				{
 					if(is_string($primaryKey) && $this->$primaryKey===null)
 						$this->$primaryKey=$builder->getLastInsertID($table);
-					else if(is_array($primaryKey))
+					elseif(is_array($primaryKey))
 					{
 						foreach($primaryKey as $pk)
 						{
@@ -1113,7 +1129,7 @@ abstract class CActiveRecord extends CModel
 	 * @param array $attributes список сохраняемых атрибутов. По умолчанию -
 	 * null, т.е., сохраняются все атрибуты, загруженные из БД
 	 * @return boolean успешно ли выполнено обновление
-	 * @throws CException вызывается, если запись является новой
+	 * @throws CDbException вызывается, если запись является новой
 	 */
 	public function update($attributes=null)
 	{
@@ -1244,7 +1260,7 @@ abstract class CActiveRecord extends CModel
 	public function refresh()
 	{
 		Yii::trace(get_class($this).'.refresh()','system.db.ar.CActiveRecord');
-		if(!$this->getIsNewRecord() && ($record=$this->findByPk($this->getPrimaryKey()))!==null)
+		if(($record=$this->findByPk($this->getPrimaryKey()))!==null)
 		{
 			$this->_attributes=array();
 			$this->_related=array();
@@ -1284,7 +1300,7 @@ abstract class CActiveRecord extends CModel
 		$table=$this->getMetaData()->tableSchema;
 		if(is_string($table->primaryKey))
 			return $this->{$table->primaryKey};
-		else if(is_array($table->primaryKey))
+		elseif(is_array($table->primaryKey))
 		{
 			$values=array();
 			foreach($table->primaryKey as $name)
@@ -1309,7 +1325,7 @@ abstract class CActiveRecord extends CModel
 		$table=$this->getMetaData()->tableSchema;
 		if(is_string($table->primaryKey))
 			$this->{$table->primaryKey}=$value;
-		else if(is_array($table->primaryKey))
+		elseif(is_array($table->primaryKey))
 		{
 			foreach($table->primaryKey as $name)
 				$this->$name=$value[$name];
@@ -1355,6 +1371,7 @@ abstract class CActiveRecord extends CModel
 	{
         $this->beforeFind();
 		$this->applyScopes($criteria);
+		
 		if(empty($criteria->with))
 		{
 			if(!$all)
@@ -1397,13 +1414,13 @@ abstract class CActiveRecord extends CModel
 						$scope=$v;
 						$params=array();
 					}
-					else if(is_array($v))
+					elseif(is_array($v))
 					{
 						$scope=key($v);
 						$params=current($v);
 					}
 				}
-				else if(is_string($k))
+				elseif(is_string($k))
 				{
 					$scope=$k;
 					$params=$v;
@@ -1417,7 +1434,7 @@ abstract class CActiveRecord extends CModel
 		{
 			$c->mergeWith($criteria);
 			$criteria=$c;
-			$this->_c=null;
+			$this->resetScope(false);
 		}
 	}
 
@@ -1582,7 +1599,7 @@ abstract class CActiveRecord extends CModel
 		$this->beforeFind();
 		if(($criteria=$this->getDbCriteria(false))!==null && !empty($criteria->with))
 		{
-			$this->_c=null;
+			$this->resetScope(false);
 			$finder=new CActiveFinder($this,$criteria->with);
 			return $finder->findBySql($sql,$params);
 		}
@@ -1606,7 +1623,7 @@ abstract class CActiveRecord extends CModel
 		$this->beforeFind();
 		if(($criteria=$this->getDbCriteria(false))!==null && !empty($criteria->with))
 		{
-			$this->_c=null;
+			$this->resetScope(false);
 			$finder=new CActiveFinder($this,$criteria->with);
 			return $finder->findAllBySql($sql,$params);
 		}
@@ -1912,7 +1929,7 @@ abstract class CActiveRecord extends CModel
 			{
 				if(property_exists($record,$name))
 					$record->$name=$value;
-				else if(isset($md->columns[$name]))
+				elseif(isset($md->columns[$name]))
 					$record->_attributes[$name]=$value;
 			}
 			$record->_pk=$record->getPrimaryKey();
@@ -1985,7 +2002,6 @@ abstract class CActiveRecord extends CModel
 /**
  * Класс CBaseActiveRelation - это базовый класс для всех активных связей.
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CActiveRecord.php 3533 2012-01-08 22:07:55Z mdomba $
  * @package system.db.ar
  */
 class CBaseActiveRelation extends CComponent
@@ -2076,7 +2092,7 @@ class CBaseActiveRelation extends CComponent
 		{
 			if($this->select==='*')
 				$this->select=$criteria['select'];
-			else if($criteria['select']!=='*')
+			elseif($criteria['select']!=='*')
 			{
 				$select1=is_string($this->select)?preg_split('/\s*,\s*/',trim($this->select),-1,PREG_SPLIT_NO_EMPTY):$this->select;
 				$select2=is_string($criteria['select'])?preg_split('/\s*,\s*/',trim($criteria['select']),-1,PREG_SPLIT_NO_EMPTY):$criteria['select'];
@@ -2088,7 +2104,7 @@ class CBaseActiveRelation extends CComponent
 		{
 			if($this->condition==='')
 				$this->condition=$criteria['condition'];
-			else if($criteria['condition']!=='')
+			elseif($criteria['condition']!=='')
 				$this->condition="({$this->condition}) AND ({$criteria['condition']})";
 		}
 
@@ -2099,7 +2115,7 @@ class CBaseActiveRelation extends CComponent
 		{
 			if($this->order==='')
 				$this->order=$criteria['order'];
-			else if($criteria['order']!=='')
+			elseif($criteria['order']!=='')
 				$this->order=$criteria['order'].', '.$this->order;
 		}
 
@@ -2107,7 +2123,7 @@ class CBaseActiveRelation extends CComponent
 		{
 			if($this->group==='')
 				$this->group=$criteria['group'];
-			else if($criteria['group']!=='')
+			elseif($criteria['group']!=='')
 				$this->group.=', '.$criteria['group'];
 		}
 
@@ -2115,7 +2131,7 @@ class CBaseActiveRelation extends CComponent
 		{
 			if($this->join==='')
 				$this->join=$criteria['join'];
-			else if($criteria['join']!=='')
+			elseif($criteria['join']!=='')
 				$this->join.=' '.$criteria['join'];
 		}
 
@@ -2123,7 +2139,7 @@ class CBaseActiveRelation extends CComponent
 		{
 			if($this->having==='')
 				$this->having=$criteria['having'];
-			else if($criteria['having']!=='')
+			elseif($criteria['having']!=='')
 				$this->having="({$this->having}) AND ({$criteria['having']})";
 		}
 	}
@@ -2133,7 +2149,6 @@ class CBaseActiveRelation extends CComponent
 /**
  * Класс CStatRelation представляет статистический реляционный запрос.
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CActiveRecord.php 3533 2012-01-08 22:07:55Z mdomba $
  * @package system.db.ar
  */
 class CStatRelation extends CBaseActiveRelation
@@ -2171,7 +2186,6 @@ class CStatRelation extends CBaseActiveRelation
  * Класс CActiveRelation - это базовый класс, представляющий активные связи,
  * возвращающие связанные объекты
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CActiveRecord.php 3533 2012-01-08 22:07:55Z mdomba $
  * @package system.db.ar
  * @since 1.0
  */
@@ -2236,7 +2250,7 @@ class CActiveRelation extends CBaseActiveRelation
 			{
 				if($this->on==='')
 					$this->on=$criteria['condition'];
-				else if($criteria['condition']!=='')
+				elseif($criteria['condition']!=='')
 					$this->on="({$this->on}) AND ({$criteria['condition']})";
 			}
 			unset($criteria['condition']);
@@ -2251,7 +2265,7 @@ class CActiveRelation extends CBaseActiveRelation
 		{
 			if($this->on==='')
 				$this->on=$criteria['on'];
-			else if($criteria['on']!=='')
+			elseif($criteria['on']!=='')
 				$this->on="({$this->on}) AND ({$criteria['on']})";
 		}
 
@@ -2270,7 +2284,6 @@ class CActiveRelation extends CBaseActiveRelation
 /**
  * Класс CBelongsToRelation представляет параметры, определяющие связь BELONGS_TO.
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CActiveRecord.php 3533 2012-01-08 22:07:55Z mdomba $
  * @package system.db.ar
  * @since 1.0
  */
@@ -2282,7 +2295,6 @@ class CBelongsToRelation extends CActiveRelation
 /**
  * Класс CHasOneRelation представляет параметры, определяющие связь HAS_ONE.
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CActiveRecord.php 3533 2012-01-08 22:07:55Z mdomba $
  * @package system.db.ar
  * @since 1.0
  */
@@ -2300,7 +2312,6 @@ class CHasOneRelation extends CActiveRelation
 /**
  * Класс CHasManyRelation представляет параметры, определяющие связь HAS_MANY.
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CActiveRecord.php 3533 2012-01-08 22:07:55Z mdomba $
  * @package system.db.ar
  * @since 1.0
  */
@@ -2357,12 +2368,55 @@ class CHasManyRelation extends CActiveRelation
 /**
  * Класс CManyManyRelation представляет параметры, определяющие связь MANY_MANY.
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CActiveRecord.php 3533 2012-01-08 22:07:55Z mdomba $
  * @package system.db.ar
  * @since 1.0
  */
 class CManyManyRelation extends CHasManyRelation
 {
+	/**
+	 * @var string name of the junction table for the many-to-many relation.
+	 */
+	private $_junctionTableName=null;
+	/**
+	 * @var array list of foreign keys of the junction table for the many-to-many relation.
+	 */
+	private $_junctionForeignKeys=null;
+
+	/**
+	 * @return string junction table name.
+	 * @since 1.1.12
+	 */
+	public function getJunctionTableName()
+	{
+		if ($this->_junctionTableName===null)
+			$this->initJunctionData();
+		return $this->_junctionTableName;
+	}
+
+	/**
+	 * @return array list of junction table foreign keys.
+	 * @since 1.1.12
+	 */
+	public function getJunctionForeignKeys()
+	{
+		if ($this->_junctionForeignKeys===null)
+			$this->initJunctionData();
+		return $this->_junctionForeignKeys;
+	}
+
+	/**
+	 * Initializes values of {@link junctionTableName} and {@link junctionForeignKeys} parsing
+	 * {@link foreignKey} value.
+	 * @throws CDbException if {@link foreignKey} has been specified in wrong format.
+	 */
+	private function initJunctionData()
+	{
+		if(!preg_match('/^\s*(.*?)\((.*)\)\s*$/',$this->foreignKey,$matches))
+			throw new CDbException(Yii::t('yii','The relation "{relation}" in active record class "{class}" is specified with an invalid foreign key. The format of the foreign key must be "joinTable(fk1,fk2,...)".',
+				array('{class}'=>$this->className,'{relation}'=>$this->name)));
+		$this->_junctionTableName=$matches[1];
+		$this->_junctionForeignKeys=preg_split('/\s*,\s*/',$matches[2],-1,PREG_SPLIT_NO_EMPTY);
+	}
 }
 
 
@@ -2370,7 +2424,6 @@ class CManyManyRelation extends CHasManyRelation
  * Класс CActiveRecordMetaData представляет метаданные для Active Record-класса.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CActiveRecord.php 3533 2012-01-08 22:07:55Z mdomba $
  * @package system.db.ar
  * @since 1.0
  */
@@ -2412,7 +2465,7 @@ class CActiveRecordMetaData
 			$table->primaryKey=$model->primaryKey();
 			if(is_string($table->primaryKey) && isset($table->columns[$table->primaryKey]))
 				$table->columns[$table->primaryKey]->isPrimaryKey=true;
-			else if(is_array($table->primaryKey))
+			elseif(is_array($table->primaryKey))
 			{
 				foreach($table->primaryKey as $name)
 				{

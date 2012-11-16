@@ -21,6 +21,9 @@
  * dd      | День месяца от 01 до 31, с нулем
  * M       | Номер месяца от 1 до 12, без нулей
  * MM      | Номер месяца от 01 до 12, с нулем
+ * MMM     | Сокращенное название месяца из 3 букв (с версии 1.1.11)
+ * MMM     | Abbreviation representation of month (available since 1.1.11; locale aware since 1.1.13)
+ * MMMM    | Full name representation (available since 1.1.13; locale aware)
  * yy      | 2 цифры года, например, 96, 05
  * yyyy    | 4 цифры года, например, 2005
  * h       | Часы с 0 до 23, без нулей
@@ -32,6 +35,7 @@
  * s	   | Секунды с 0 до 59, без нулей
  * ss      | Секунды с 00 до 59, с нулем
  * a       | Формат времени AM или PM, регистронезависим (с версии 1.1.5)
+ * ?       | Соответствует любому символу (с версии 1.1.11)
  * ----------------------------------------------------
  * </pre>
  * Все остальные символы должны появиться в строке даты на соответствующих позициях.
@@ -41,16 +45,26 @@
  * $timestamp=CDateTimeParser::parse('21/10/2008','dd/MM/yyyy');
  * </pre>
  *
+ * Locale specific patterns such as MMM and MMMM uses {@link CLocale} for retrieving needed information.
+ *
  * Для форматирования временной отметки в UNIX-формате в строку даты используйте класс {@link CDateFormatter}.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CDateTimeParser.php 2928 2011-02-01 17:41:51Z alexander.makarow $
  * @package system.utils
  * @since 1.0
  */
 class CDateTimeParser
 {
+	/**
+	 * @var boolean whether 'mbstring' PHP extension available. This static property introduced for
+	 * the better overall performance of the class functionality. Checking 'mbstring' availability
+	 * through static property with predefined status value is much faster than direct calling
+	 * of function_exists('...').
+	 * Intended for internal use only.
+	 * @since 1.1.13
+	 */
+	private static $_mbstringAvailable;
 	/**
 	 * Конвертирует строку даты/времени во временную отметку в UNIX-формате.
 	 * @param string $value конвертируемая строка даты
@@ -66,9 +80,12 @@ class CDateTimeParser
 	 */
 	public static function parse($value,$pattern='MM/dd/yyyy',$defaults=array())
 	{
+		if(self::$_mbstringAvailable===null)
+			self::$_mbstringAvailable=extension_loaded('mbstring');
+
 		$tokens=self::tokenize($pattern);
 		$i=0;
-		$n=strlen($value);
+		$n=self::$_mbstringAvailable ? mb_strlen($value,Yii::app()->charset) : strlen($value);
 		foreach($tokens as $token)
 		{
 			switch($token)
@@ -85,6 +102,22 @@ class CDateTimeParser
 					if(($year=self::parseInteger($value,$i,1,2))===false)
 						return false;
 					$i+=strlen($year);
+					break;
+				}
+				case 'MMMM':
+				{
+					$monthName='';
+					if(($month=self::parseMonth($value,$i,'wide',$monthName))===false)
+						return false;
+					$i+=self::$_mbstringAvailable ? mb_strlen($monthName,Yii::app()->charset) : strlen($monthName);
+					break;
+				}
+				case 'MMM':
+				{
+					$monthName='';
+					if(($month=self::parseMonth($value,$i,'abbreviated',$monthName))===false)
+						return false;
+					$i+=self::$_mbstringAvailable ? mb_strlen($monthName,Yii::app()->charset) : strlen($monthName);
 					break;
 				}
 				case 'MM':
@@ -167,7 +200,7 @@ class CDateTimeParser
 				    {
 				    	if($hour==12 && $ampm==='am')
 				    		$hour=0;
-				    	else if($hour<12 && $ampm==='pm')
+				    	elseif($hour<12 && $ampm==='pm')
 				    		$hour+=12;
 				    }
 					$i+=2;
@@ -176,7 +209,7 @@ class CDateTimeParser
 				default:
 				{
 					$tn=strlen($token);
-					if($i>=$n || substr($value,$i,$tn)!==$token)
+					if($i>=$n || ($token{0}!='?' && (self::$_mbstringAvailable ? mb_substr($value,$i,$tn,Yii::app()->charset) : substr($value,$i,$tn))!==$token))
 						return false;
 					$i+=$tn;
 					break;
@@ -249,18 +282,19 @@ class CDateTimeParser
 		return $tokens;
 	}
 
-	/*
+	/**
 	 * @param string $value строка даты для парсинга
 	 * @param integer $offset начальное смещение
 	 * @param integer $minLength минимальная длина
 	 * @param integer $maxLength максимальная длина
+	 * @return string parsed integer value
 	 */
 	protected static function parseInteger($value,$offset,$minLength,$maxLength)
 	{
 		for($len=$maxLength;$len>=$minLength;--$len)
 		{
-			$v=substr($value,$offset,$len);
-			if(ctype_digit($v) && strlen($v)>=$minLength)
+			$v=self::$_mbstringAvailable ? mb_substr($value,$offset,$len,Yii::app()->charset) : substr($value,$offset,$len);
+			if(ctype_digit($v) && (self::$_mbstringAvailable ? mb_strlen($v,Yii::app()->charset) : strlen($v))>=$minLength)
 				return $v;
 		}
 		return false;
@@ -269,10 +303,46 @@ class CDateTimeParser
 	/*
 	 * @param string $value строка даты для парсинга
 	 * @param integer $offset начальное смещение
+	 * @return string parsed day period value
 	 */
 	protected static function parseAmPm($value, $offset)
 	{
-		$v=strtolower(substr($value,$offset,2));
+		$v=strtolower(self::$_mbstringAvailable ? mb_substr($value,$offset,2,Yii::app()->charset) : substr($value,$offset,2));
 		return $v==='am' || $v==='pm' ? $v : false;
+	}
+
+	/**
+	 * @param string $value строка даты для парсинга
+	 * @param integer $offset начальное смещение
+	 * @param string $width month name width. It can be 'wide', 'abbreviated' or 'narrow'.
+	 * @param string $monthName extracted month name. Passed by reference.
+	 * @return string parsed month name.
+	 * @since 1.1.13
+	 */
+	protected static function parseMonth($value,$offset,$width,&$monthName)
+	{
+		$valueLength=self::$_mbstringAvailable ? mb_strlen($value,Yii::app()->charset) : strlen($value);
+		for($len=1; $offset+$len<=$valueLength; $len++)
+		{
+			$monthName=self::$_mbstringAvailable ? mb_substr($value,$offset,$len,Yii::app()->charset) : substr($value,$offset,$len);
+			if(!preg_match('/^\p{L}+$/u',$monthName)) // unicode aware replacement for ctype_alpha($monthName)
+			{
+				$monthName=self::$_mbstringAvailable ? mb_substr($monthName,0,-1,Yii::app()->charset) : substr($monthName,0,-1);
+				break;
+			}
+		}
+		$monthName=self::$_mbstringAvailable ? mb_strtolower($monthName,Yii::app()->charset) : strtolower($monthName);
+
+		$monthNames=Yii::app()->getLocale()->getMonthNames($width,false);
+		foreach($monthNames as $k=>$v)
+			$monthNames[$k]=rtrim(self::$_mbstringAvailable ? mb_strtolower($v,Yii::app()->charset) : strtolower($v),'.');
+
+		$monthNamesStandAlone=Yii::app()->getLocale()->getMonthNames($width,true);
+		foreach($monthNamesStandAlone as $k=>$v)
+			$monthNamesStandAlone[$k]=rtrim(self::$_mbstringAvailable ? mb_strtolower($v,Yii::app()->charset) : strtolower($v),'.');
+
+		if(($v=array_search($monthName,$monthNames))===false && ($v=array_search($monthName,$monthNamesStandAlone))===false)
+			return false;
+		return $v;
 	}
 }

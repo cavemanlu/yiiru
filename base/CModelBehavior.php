@@ -16,7 +16,6 @@
  * @property CModel $owner модель, к которой присоединено данное поведение
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CModelBehavior.php 3515 2011-12-28 12:29:24Z mdomba $
  * @package system.base
  */
 class CModelBehavior extends CBehavior
@@ -31,7 +30,7 @@ class CModelBehavior extends CBehavior
 	 * методы-обработчики событий (значения массива)
 	 * @see CBehavior::events
 	 */
-	public function events()
+	protected function events()
 	{
 		return array(
 			'onAfterConstruct'=>'afterConstruct',
@@ -42,30 +41,36 @@ class CModelBehavior extends CBehavior
 
 	/**
 	 * Реагирует на событие {@link CModel::onAfterConstruct}.
-	 * Переопределите данный метод, если вы хотите обрабатывать соответствующее
-	 * событие в {@link owner контроллере-собственнике}
+	 * Для того, чтобы обрабатывать соответствующее событие в
+	 * {@link CBehavior::owner собственнике (owner)}, необходимо переопределить
+	 * данный метод и сделать его публичным 
 	 * @param CModelEvent $event параметр события
 	 */
-	public function afterConstruct($event)
+	protected function afterConstruct($event)
 	{
 	}
 
 	/**
 	 * Реагирует на событие {@link CModel::onBeforeValidate}.
-	 * Переопределите данный метод, если вы хотите обрабатывать соответствующее событие в {@link owner контроллере-собственнике}.
-	 * Вы можете установить свойство {@link CModelEvent::isValid} в значение false для прекращения выполнения процесса валидации.
+	 * Для того, чтобы обрабатывать соответствующее событие в
+	 * {@link CBehavior::owner собственнике (owner)}, необходимо переопределить
+	 * данный метод и сделать его публичным. Можно установить свойство
+	 * {@link CModelEvent::isValid} в значение false для прекращения выполнения
+	 * процесса валидации.
 	 * @param CModelEvent $event параметр события
 	 */
-	public function beforeValidate($event)
+	protected function beforeValidate($event)
 	{
 	}
 
 	/**
 	 * Реагирует на событие {@link CModel::onAfterValidate} event.
-	 * Переопределите данный метод, если вы хотите обрабатывать соответствующее событие в {@link owner контроллере-собственнике}.
+	 * Для того, чтобы обрабатывать соответствующее событие в
+	 * {@link CBehavior::owner собственнике (owner)}, необходимо переопределить
+	 * данный метод и сделать его публичным 
 	 * @param CEvent $event параметр события
 	 */
-	public function afterValidate($event)
+	protected function afterValidate($event)
 	{
 	}
 }

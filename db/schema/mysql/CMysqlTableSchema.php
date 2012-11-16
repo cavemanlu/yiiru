@@ -12,7 +12,6 @@
  * Класс CMysqlTableSchema представляет метаданные таблицы базы данных MySQL.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CMysqlTableSchema.php 2799 2011-01-01 19:31:13Z qiang.xue $
  * @package system.db.schema.mysql
  * @since 1.0
  */

@@ -12,7 +12,6 @@
  * Класс CException представляет корневой класс исключений для всех целей.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CException.php 2799 2011-01-01 19:31:13Z qiang.xue $
  * @package system.base
  * @since 1.0
  */

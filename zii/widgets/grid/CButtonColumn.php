@@ -20,7 +20,6 @@ Yii::import('zii.widgets.grid.CGridColumn');
  * настраивать порядок отображения кнопок.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CButtonColumn.php 3424 2011-10-24 20:13:19Z mdomba $
  * @package zii.widgets.grid
  * @since 1.1
  */
@@ -140,7 +139,7 @@ class CButtonColumn extends CGridColumn
 	 */
 	public $afterDelete;
 	/**
-	 * @var array настройка дополнительных кнопкок. Каждый элемент массива определяет отдельную кнопку в
+	 * @var array настройка дополнительных кнопок. Каждый элемент массива определяет отдельную кнопку в
 	 * следующем формате:
 	 * <pre>
 	 * 'buttonID' => array(
@@ -152,9 +151,12 @@ class CButtonColumn extends CGridColumn
 	 *     'visible'=>'...',   // PHP-выражение для определения видимости кнопки
 	 * )
 	 * </pre>
+	 * 
 	 * В PHP-выражении для опций 'url' и/или 'visible' доступны переменные: <code>$row</code> -
 	 * текущий номер строки (начиная с нуля) и <code>$data</code> - модель данных для строки.
 	 *
+	 * If the 'buttonID' is 'view', 'update' or 'delete' the options will be applied to the default buttons.
+	 
 	 * Примечание: для отображения данных дополнительных кнопок необходимо настроить свойство {@link template}
 	 * так, чтобы соответствующий идентификатор кнопки присутствовал в виде метки в шаблоне
 	 */
@@ -172,12 +174,12 @@ class CButtonColumn extends CGridColumn
 		{
 			if(strpos($this->template,'{'.$id.'}')===false)
 				unset($this->buttons[$id]);
-			else if(isset($button['click']))
+			elseif(isset($button['click']))
 			{
 				if(!isset($button['options']['class']))
 					$this->buttons[$id]['options']['class']=$id;
-				if(strpos($button['click'],'js:')!==0)
-					$this->buttons[$id]['click']='js:'.$button['click'];
+				if(!($button['click'] instanceof CJavaScriptExpression))
+					$this->buttons[$id]['click']=new CJavaScriptExpression($button['click']);
 			}
 		}
 
@@ -271,7 +273,7 @@ EOD;
 			{
 				$function=CJavaScript::encode($button['click']);
 				$class=preg_replace('/\s+/','.',$button['options']['class']);
-				$js[]="jQuery('#{$this->grid->id} a.{$class}').live('click',$function);";
+				$js[]="$(document).on('click','#{$this->grid->id} a.{$class}',$function);";
 			}
 		}
 

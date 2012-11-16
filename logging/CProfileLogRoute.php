@@ -27,7 +27,6 @@
  * профилирования. По умолчанию - 'summary'
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CProfileLogRoute.php 3515 2011-12-28 12:29:24Z mdomba $
  * @package system.logging
  * @since 1.0
  */
@@ -114,7 +113,7 @@ class CProfileLogRoute extends CWebLogRoute
 				$stack[]=$log;
 				$n++;
 			}
-			else if(!strncasecmp($message,'end:',4))
+			elseif(!strncasecmp($message,'end:',4))
 			{
 				$token=substr($message,4);
 				if(($last=array_pop($stack))!==null && $last[0]===$token)
@@ -152,7 +151,7 @@ class CProfileLogRoute extends CWebLogRoute
 				$log[0]=substr($message,6);
 				$stack[]=$log;
 			}
-			else if(!strncasecmp($message,'end:',4))
+			elseif(!strncasecmp($message,'end:',4))
 			{
 				$token=substr($message,4);
 				if(($last=array_pop($stack))!==null && $last[0]===$token)
@@ -200,7 +199,7 @@ class CProfileLogRoute extends CWebLogRoute
 		list($token,$calls,$min,$max,$total)=$result;
 		if($delta<$min)
 			$min=$delta;
-		else if($delta>$max)
+		elseif($delta>$max)
 			$max=$delta;
 		$calls++;
 		$total+=$delta;

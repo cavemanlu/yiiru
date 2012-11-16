@@ -18,7 +18,6 @@
  * поведение
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CActiveRecordBehavior.php 3515 2011-12-28 12:29:24Z mdomba $
  * @package system.db.ar
  */
 class CActiveRecordBehavior extends CModelBehavior
@@ -44,66 +43,66 @@ class CActiveRecordBehavior extends CModelBehavior
 	}
 
 	/**
-	 * Реагирует на событие {@link CActiveRecord::onBeforeSave}. Переопределите
-	 * данный метод для обработки соответствующего события
-	 * {@link CBehavior::owner владельца}. Можно установить параметр
-	 * {@link CModelEvent::isValid} в значение false для выхода из процесса
-	 * сохранения
+	 * Реагирует на событие {@link CActiveRecord::onBeforeSave}. Для обработки
+	 * соответствующего события {@link CBehavior::owner владельца} необходимо
+	 * переопределить данный метод и сделать его публичным. Можно установить
+	 * параметр {@link CModelEvent::isValid} в значение false для выхода из
+	 * процесса сохранения
 	 * @param CModelEvent $event параметр события
 	 */
-	public function beforeSave($event)
+	protected function beforeSave($event)
 	{
 	}
 
 	/**
-	 * Реагирует на событие {@link CActiveRecord::onAfterSave}. Переопределите
-	 * данный метод для обработки соответствующего события
-	 * {@link CBehavior::owner владельца}
+	 * Реагирует на событие {@link CActiveRecord::onAfterSave}. Для обработки
+	 * соответствующего события {@link CBehavior::owner владельца} необходимо
+	 * переопределить данный метод и сделать его публичным.
 	 * @param CModelEvent $event параметр события
 	 */
-	public function afterSave($event)
+	protected function afterSave($event)
 	{
 	}
 
 	/**
-	 * Реагирует на событие {@link CActiveRecord::onBeforeDelete}. Переопределите
-	 * данный метод для обработки соответствующего события
-	 * {@link CBehavior::owner владельца}. Можно установить параметр
-	 * {@link CModelEvent::isValid} в значение false для выхода из процесса
-	 * удаления
+	 * Реагирует на событие {@link CActiveRecord::onBeforeDelete}. Для обработки
+	 * соответствующего события {@link CBehavior::owner владельца} необходимо
+	 * переопределить данный метод и сделать его публичным. Можно установить
+	 * параметр {@link CModelEvent::isValid} в значение false для выхода из
+	 * процесса удаления
 	 * @param CModelEvent $event параметр события
 	 */
-	public function beforeDelete($event)
+	protected function beforeDelete($event)
 	{
 	}
 
 	/**
-	 * Реагирует на событие {@link CActiveRecord::onAfterDelete}. Переопределите
-	 * данный метод для обработки соответствующего события
-	 * {@link CBehavior::owner владельца}
+	 * Реагирует на событие {@link CActiveRecord::onAfterDelete}. Для обработки
+	 * соответствующего события {@link CBehavior::owner владельца} необходимо
+	 * переопределить данный метод и сделать его публичным.
 	 * @param CModelEvent $event параметр события
 	 */
-	public function afterDelete($event)
+	protected function afterDelete($event)
 	{
 	}
 
 	/**
-	 * Реагирует на событие {@link CActiveRecord::onBeforeFind}. Переопределите
-	 * данный метод для обработки соответствующего события
-	 * {@link CBehavior::owner владельца}
+	 * Реагирует на событие {@link CActiveRecord::onBeforeFind}. Для обработки
+	 * соответствующего события {@link CBehavior::owner владельца} необходимо
+	 * переопределить данный метод и сделать его публичным.
 	 * @param CModelEvent $event параметр события
 	 */
-	public function beforeFind($event)
+	protected function beforeFind($event)
 	{
 	}
 
 	/**
-	 * Реагирует на событие {@link CActiveRecord::onAfterFind}. Переопределите
-	 * данный метод для обработки соответствующего события
-	 * {@link CBehavior::owner владельца}
+	 * Реагирует на событие {@link CActiveRecord::onAfterFind}. Для обработки
+	 * соответствующего события {@link CBehavior::owner владельца} необходимо
+	 * переопределить данный метод и сделать его публичным.
 	 * @param CModelEvent $event параметр события
 	 */
-	public function afterFind($event)
+	protected function afterFind($event)
 	{
 	}
 }

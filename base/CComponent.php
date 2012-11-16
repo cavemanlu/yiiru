@@ -81,7 +81,6 @@
  * определяемые геттерами и/или сеттерами) доступны из компонента, к которому присоединено поведение.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CComponent.php 3521 2011-12-29 22:10:57Z mdomba $
  * @package system.base
  * @since 1.0
  */
@@ -108,7 +107,7 @@ class CComponent
 		$getter='get'.$name;
 		if(method_exists($this,$getter))
 			return $this->$getter();
-		else if(strncasecmp($name,'on',2)===0 && method_exists($this,$name))
+		elseif(strncasecmp($name,'on',2)===0 && method_exists($this,$name))
 		{
 			// duplicating getEventHandlers() here for performance
 			$name=strtolower($name);
@@ -116,9 +115,9 @@ class CComponent
 				$this->_e[$name]=new CList;
 			return $this->_e[$name];
 		}
-		else if(isset($this->_m[$name]))
+		elseif(isset($this->_m[$name]))
 			return $this->_m[$name];
-		else if(is_array($this->_m))
+		elseif(is_array($this->_m))
 		{
 			foreach($this->_m as $object)
 			{
@@ -149,7 +148,7 @@ class CComponent
 		$setter='set'.$name;
 		if(method_exists($this,$setter))
 			return $this->$setter($value);
-		else if(strncasecmp($name,'on',2)===0 && method_exists($this,$name))
+		elseif(strncasecmp($name,'on',2)===0 && method_exists($this,$name))
 		{
 			// duplicating getEventHandlers() here for performance
 			$name=strtolower($name);
@@ -157,7 +156,7 @@ class CComponent
 				$this->_e[$name]=new CList;
 			return $this->_e[$name]->add($value);
 		}
-		else if(is_array($this->_m))
+		elseif(is_array($this->_m))
 		{
 			foreach($this->_m as $object)
 			{
@@ -185,12 +184,12 @@ class CComponent
 		$getter='get'.$name;
 		if(method_exists($this,$getter))
 			return $this->$getter()!==null;
-		else if(strncasecmp($name,'on',2)===0 && method_exists($this,$name))
+		elseif(strncasecmp($name,'on',2)===0 && method_exists($this,$name))
 		{
 			$name=strtolower($name);
 			return isset($this->_e[$name]) && $this->_e[$name]->getCount();
 		}
-		else if(is_array($this->_m))
+		elseif(is_array($this->_m))
 		{
  			if(isset($this->_m[$name]))
  				return true;
@@ -216,9 +215,9 @@ class CComponent
 		$setter='set'.$name;
 		if(method_exists($this,$setter))
 			$this->$setter(null);
-		else if(strncasecmp($name,'on',2)===0 && method_exists($this,$name))
+		elseif(strncasecmp($name,'on',2)===0 && method_exists($this,$name))
 			unset($this->_e[strtolower($name)]);
-		else if(is_array($this->_m))
+		elseif(is_array($this->_m))
 		{
 			if(isset($this->_m[$name]))
 				$this->detachBehavior($name);
@@ -230,13 +229,13 @@ class CComponent
 					{
 						if(property_exists($object,$name))
 							return $object->$name=null;
-						else if($object->canSetProperty($name))
+						elseif($object->canSetProperty($name))
 							return $object->$setter(null);
 					}
 				}
 			}
 		}
-		else if(method_exists($this,'get'.$name))
+		elseif(method_exists($this,'get'.$name))
 			throw new CException(Yii::t('yii','Property "{class}.{property}" is read only.',
 				array('{class}'=>get_class($this), '{property}'=>$name)));
 	}
@@ -543,7 +542,7 @@ class CComponent
 			{
 				if(is_string($handler))
 					call_user_func($handler,$event);
-				else if(is_callable($handler,true))
+				elseif(is_callable($handler,true))
 				{
 					if(is_array($handler))
 					{
@@ -551,7 +550,7 @@ class CComponent
 						list($object,$method)=$handler;
 						if(is_string($object))	// static method call
 							call_user_func($handler,$event);
-						else if(method_exists($object,$method))
+						elseif(method_exists($object,$method))
 							$object->$method($event);
 						else
 							throw new CException(Yii::t('yii','Event "{class}.{event}" is attached with an invalid handler "{handler}".',
@@ -568,7 +567,7 @@ class CComponent
 					return;
 			}
 		}
-		else if(YII_DEBUG && !$this->hasEvent($name))
+		elseif(YII_DEBUG && !$this->hasEvent($name))
 			throw new CException(Yii::t('yii','Event "{class}.{event}" is not defined.',
 				array('{class}'=>get_class($this), '{event}'=>$name)));
 	}
@@ -622,7 +621,6 @@ class CComponent
  * еще не выполненные обработчики выполняться не будут.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CComponent.php 3521 2011-12-29 22:10:57Z mdomba $
  * @package system.base
  * @since 1.0
  */
@@ -673,7 +671,6 @@ class CEvent extends CComponent
  * Тогда можно использовать перечисляемые значения так - TextAlign::Left и TextAlign::Right.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CComponent.php 3521 2011-12-29 22:10:57Z mdomba $
  * @package system.base
  * @since 1.0
  */

@@ -22,19 +22,11 @@ Yii::import('zii.widgets.grid.CGridColumn');
  * ссылки в ячейке-заголовке таблицы для включения и переключения направления сортировки.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CDataColumn.php 3448 2011-11-18 10:21:42Z mdomba $
  * @package zii.widgets.grid
  * @since 1.1
  */
 class CDataColumn extends CGridColumn
 {
-	/**
-	 * @var string имя атрибута модели данных. Значение соответствующего атрибута будет генерироваться
-	 * в каждой ячейке данных. Если определено свойство {@link value}, то данное свойство будет проигнорировано,
-	 * если только столбец не должен быть сортируемым или фильтруемым
-	 * @see value
-	 * @see sortable
-	 */
 	/**
 	 * @var string имя атрибута модели данных. Используется для сортировки
 	 * столбца, фильтрации и генерации соответствующего значения каждой ячейки
@@ -100,11 +92,11 @@ class CDataColumn extends CGridColumn
 	{
 		if(is_string($this->filter))
 			echo $this->filter;
-		else if($this->filter!==false && $this->grid->filter!==null && $this->name!==null && strpos($this->name,'.')===false)
+		elseif($this->filter!==false && $this->grid->filter!==null && $this->name!==null && strpos($this->name,'.')===false)
 		{
 			if(is_array($this->filter))
 				echo CHtml::activeDropDownList($this->grid->filter, $this->name, $this->filter, array('id'=>false,'prompt'=>''));
-			else if($this->filter===null)
+			elseif($this->filter===null)
 				echo CHtml::activeTextField($this->grid->filter, $this->name, array('id'=>false));
 		}
 		else
@@ -119,8 +111,8 @@ class CDataColumn extends CGridColumn
 	protected function renderHeaderCellContent()
 	{
 		if($this->grid->enableSorting && $this->sortable && $this->name!==null)
-			echo $this->grid->dataProvider->getSort()->link($this->name,$this->header);
-		else if($this->name!==null && $this->header===null)
+			echo $this->grid->dataProvider->getSort()->link($this->name,$this->header,array('class'=>'sort-link'));
+		elseif($this->name!==null && $this->header===null)
 		{
 			if($this->grid->dataProvider instanceof CActiveDataProvider)
 				echo CHtml::encode($this->grid->dataProvider->model->getAttributeLabel($this->name));
@@ -141,7 +133,7 @@ class CDataColumn extends CGridColumn
 	{
 		if($this->value!==null)
 			$value=$this->evaluateExpression($this->value,array('data'=>$data,'row'=>$row));
-		else if($this->name!==null)
+		elseif($this->name!==null)
 			$value=CHtml::value($data,$this->name);
 		echo $value===null ? $this->grid->nullDisplay : $this->grid->getFormatter()->format($value,$this->type);
 	}

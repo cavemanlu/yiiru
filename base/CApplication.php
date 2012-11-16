@@ -28,6 +28,13 @@
  *   приложения. Данный компонент приложения загружается динамически при необходимости;</li>
  * <li>{@link getCoreMessages coreMessages}: предоставляет источник сообщений для перевода сообщений
  *   фреймворка Yii. Данный компонент приложения загружается динамически при необходимости.</li>
+ * <li>{@link getUrlManager urlManager}: provides URL construction as well as parsing functionality.
+ *   This application component is dynamically loaded when needed.</li>
+ * <li>{@link getRequest request}: represents the current HTTP request by encapsulating
+ *   the $_SERVER variable and managing cookies sent from and sent to the user.
+ *   This application component is dynamically loaded when needed.</li>
+ * <li>{@link getFormat format}: provides a set of commonly used data formatting methods.
+ *   This application component is dynamically loaded when needed.</li>
  * </ul>
  *
  * CApplication работает по следующему жизненному циклу при обработке пользовательского запроса:
@@ -82,7 +89,6 @@
  * @property string $homeUrl URL-адрес домашней страницы
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CApplication.php 3515 2011-12-28 12:29:24Z mdomba $
  * @package system.base
  * @since 1.0
  */
@@ -641,7 +647,7 @@ abstract class CApplication extends CModule
 				$this->_stateChanged=true;
 			}
 		}
-		else if(!isset($this->_globalState[$key]) || $this->_globalState[$key]!==$value)
+		elseif(!isset($this->_globalState[$key]) || $this->_globalState[$key]!==$value)
 		{
 			$this->_globalState[$key]=$value;
 			$this->_stateChanged=true;

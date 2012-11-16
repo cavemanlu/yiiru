@@ -21,7 +21,6 @@
  * </ul>
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CRequiredValidator.php 3515 2011-12-28 12:29:24Z mdomba $
  * @package system.validators
  * @since 1.0
  */
@@ -59,7 +58,7 @@ class CRequiredValidator extends CValidator
 				$this->addError($object,$attribute,$message);
 			}
 		}
-		else if($this->isEmpty($value,true))
+		elseif($this->isEmpty($value,true))
 		{
 			$message=$this->message!==null?$this->message:Yii::t('yii','{attribute} cannot be blank.');
 			$this->addError($object,$attribute,$message);

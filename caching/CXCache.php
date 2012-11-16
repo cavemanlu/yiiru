@@ -19,7 +19,6 @@
  * Обратитесь к документации {@link CCache} за информацией об обычных операциях кэша, поддерживаемых компонентом CXCache.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version $Id: CXCache.php 3568 2012-02-13 16:19:25Z keyboard.idol@gmail.com $
  * @package system.caching
  */
 class CXCache extends CCache

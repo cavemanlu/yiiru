@@ -35,7 +35,6 @@
  * @property array $pluralRules выражения плюральных форм
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CLocale.php 3518 2011-12-28 23:31:29Z alexander.makarow $
  * @package system.i18n
  * @since 1.0
  */
@@ -396,7 +395,11 @@ class CLocale extends CComponent
 		{
 			$subTag = explode('_', $id);
 			// territory sub tags can be distigused from script sub tags by length
-			if (strlen($subTag[1])<4)
+			if (isset($subTag[2]) && strlen($subTag[2])<4)
+			{
+				$id = $subTag[2];
+			}
+			elseif (strlen($subTag[1])<4)
 			{
 				$id = $subTag[1];
 			}
@@ -426,19 +429,19 @@ class CLocale extends CComponent
 	public function getLocaleDisplayName($id=null, $category='languages')
 	{
 		$id = $this->getCanonicalID($id);
-		if (isset($this->_data[$category][$id]))
+		if (($category == 'languages') && ($id=$this->getLanguageID($id)) && (isset($this->_data[$category][$id])))
 		{
 			return $this->_data[$category][$id];
 		}
-		else if (($category == 'languages') && ($id=$this->getLanguageID($id)) && (isset($this->_data[$category][$id])))
+		elseif (($category == 'scripts') && ($id=$this->getScriptID($id)) && (isset($this->_data[$category][$id])))
 		{
 			return $this->_data[$category][$id];
 		}
-		else if (($category == 'scripts') && ($id=$this->getScriptID($id)) && (isset($this->_data[$category][$id])))
+		elseif (($category == 'territories') && ($id=$this->getTerritoryID($id)) && (isset($this->_data[$category][$id])))
 		{
 			return $this->_data[$category][$id];
 		}
-		else if (($category == 'territories') && ($id=$this->getTerritoryID($id)) && (isset($this->_data[$category][$id])))
+		elseif (isset($this->_data[$category][$id]))
 		{
 			return $this->_data[$category][$id];
 		}

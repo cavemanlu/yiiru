@@ -28,7 +28,6 @@
  * отображения портлета (например, для добавления кнопок min/max).
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CPortlet.php 2799 2011-01-01 19:31:13Z qiang.xue $
  * @package zii.widgets
  * @since 1.1
  */

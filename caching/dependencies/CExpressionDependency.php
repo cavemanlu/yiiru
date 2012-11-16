@@ -16,24 +16,23 @@
  * результат, вычисленный при сохранении данных в кэш.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CExpressionDependency.php 3515 2011-12-28 12:29:24Z mdomba $
  * @package system.caching.dependencies
  * @since 1.0
  */
 class CExpressionDependency extends CCacheDependency
 {
 	/**
-	 * @var string PHP-выражение, результат которого используется для определения зависимости.
-	 * Выражение также может быть допустимым обратным вызовом PHP,
-	 * например, именем метода класса (array(ClassName/Object, MethodName))
-	 * или анонимной функцией (PHP 5.3.0+). В функцию/метод будет передан один параметр -
-	 * сам объект зависимости.
+	 * @var string PHP-выражение, результат которого используется для
+	 * определения зависимости. Выражение также может быть допустимым
+	 * сериализуемым обратным вызовом PHP. В обратный вызов будет передан один
+	 * параметр - сам объект зависимости
 	 */
 	public $expression;
 
 	/**
-	 * Конструктор.
-	 * @param string $expression PHP-выражение, результат которого используется для определения зависимости.
+	 * Конструктор
+	 * @param string $expression PHP-выражение, результат которого используется
+	 * для определения зависимости
 	 */
 	public function __construct($expression='true')
 	{

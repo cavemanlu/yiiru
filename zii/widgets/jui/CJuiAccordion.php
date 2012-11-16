@@ -38,7 +38,6 @@ Yii::import('zii.widgets.jui.CJuiWidget');
  *
  * @author Sebastian Thierer <sebathi@gmail.com>
  * @author Qiang XUe <qiang.xue@gmail.com>
- * @version $Id: CJuiAccordion.php 2799 2011-01-01 19:31:13Z qiang.xue $
  * @package zii.widgets.jui
  * @since 1.1
  */

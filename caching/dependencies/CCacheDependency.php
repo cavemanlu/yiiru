@@ -21,12 +21,28 @@
  * {@link evaluateDependency}
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CCacheDependency.php 3426 2011-10-25 00:01:09Z alexander.makarow $
  * @package system.caching.dependencies
  * @since 1.0
  */
 class CCacheDependency extends CComponent implements ICacheDependency
 {
+	/**
+	 * @var boolean используется ли данная зависимость повторно. Если
+	 * установлено в значение true, то зависимые данные для данной зависимости
+	 * будут сгенерированы только один раз на запрос. В дальнейшем можно
+	 * использовать ту же зависимость для нескольких различных вызовов кеша на
+	 * одной странице без перепроверки зависимости. По умолчнию - false
+	 * @since 1.1.11
+	 */
+	public $reuseDependentData=false;
+
+	/**
+	 * @var array кешированные данные для повторно используемых зависимостей
+	 * @since 1.1.11
+	 */
+	private static $_reusableData=array();
+
+	private $_hash;
 	private $_data;
 
 	/**
@@ -35,7 +51,15 @@ class CCacheDependency extends CComponent implements ICacheDependency
 	 */
 	public function evaluateDependency()
 	{
-		$this->_data=$this->generateDependentData();
+		if ($this->reuseDependentData)
+		{
+			$hash=$this->getHash();
+			if (!isset(self::$_reusableData[$hash]['dependentData']))
+				self::$_reusableData[$hash]['dependentData']=$this->generateDependentData();
+			$this->_data=self::$_reusableData[$hash]['dependentData'];
+		}
+		else
+			$this->_data=$this->generateDependentData();
 	}
 
 	/**
@@ -43,7 +67,19 @@ class CCacheDependency extends CComponent implements ICacheDependency
 	 */
 	public function getHasChanged()
 	{
-		return $this->generateDependentData()!=$this->_data;
+		if ($this->reuseDependentData)
+		{
+			$hash=$this->getHash();
+			if (!isset(self::$_reusableData[$hash]['hasChanged']))
+			{
+				if (!isset(self::$_reusableData[$hash]['dependentData']))
+					self::$_reusableData[$hash]['dependentData']=$this->generateDependentData();
+				self::$_reusableData[$hash]['hasChanged']=self::$_reusableData[$hash]['dependentData']!=$this->_data;
+			}
+			return self::$_reusableData[$hash]['hasChanged'];
+		}
+		else
+			return $this->generateDependentData()!=$this->_data;
 	}
 
 	/**
@@ -65,5 +101,15 @@ class CCacheDependency extends CComponent implements ICacheDependency
 	protected function generateDependentData()
 	{
 		return null;
+	}
+	/**
+	 * Генерирует уникальный хеш, идентифицирующий данную зависимость
+	 * @return string уникальный хеш, идентифицирующий данную зависимость
+	 */
+	private function getHash()
+	{
+		if($this->_hash===null)
+			$this->_hash=sha1(serialize($this));
+		return $this->_hash;
 	}
 }

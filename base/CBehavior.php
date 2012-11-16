@@ -15,7 +15,6 @@
  * @property boolean $enabled активно ли поведение
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CBehavior.php 3515 2011-12-28 12:29:24Z mdomba $
  * @package system.base
  */
 class CBehavior extends CComponent implements IBehavior
@@ -40,14 +39,18 @@ class CBehavior extends CComponent implements IBehavior
 	 * Присоединяет объект поведения к компоненту.
 	 * Реализация по умолчанию устанавливает свойство {@link owner} и
 	 * присоединяет обработчик события как это объявлено в методе {@link events}.
-	 * Убедитесь, что вызываете реализацию метода родителя, если переопределяете данный метод.
-	 * @param CComponent $owner компонент, к которому присоединяется поведение.
+	 * Убедитесь, что обработчик определен как public и что вызывается реализация метода родителя, если переопределен данный метод
+	 * @param CComponent $owner компонент, к которому присоединяется поведение
 	 */
 	public function attach($owner)
 	{
 		$this->_owner=$owner;
+		$class=new ReflectionClass($this);
 		foreach($this->events() as $event=>$handler)
-			$owner->attachEventHandler($event,array($this,$handler));
+		{
+			if(!$class->getMethod($handler)->isProtected())
+				$owner->attachEventHandler($event,array($this,$handler));
+		}
 	}
 
 	/**

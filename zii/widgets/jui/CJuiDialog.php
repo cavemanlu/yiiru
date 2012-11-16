@@ -41,7 +41,6 @@ Yii::import('zii.widgets.jui.CJuiWidget');
  * за списком возможных опций (пар имя-значение).
  *
  * @author Sebastian Thierer <sebathi@gmail.com>
- * @version $Id: CJuiDialog.php 2805 2011-01-03 16:33:46Z qiang.xue $
  * @package zii.widgets.jui
  * @since 1.1
  */

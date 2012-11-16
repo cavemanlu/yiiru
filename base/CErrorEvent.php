@@ -12,7 +12,6 @@
  * Класс CErrorEvent представляет параметр для события {@link CApplication::onError onError}.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CErrorEvent.php 2799 2011-01-01 19:31:13Z qiang.xue $
  * @package system.base
  * @since 1.0
  */

@@ -41,7 +41,6 @@
  * Затем, в каждом скрипте представления нужно только привязать свойство "breadcrumbs" как это требуется.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CBreadcrumbs.php 3602 2012-02-19 22:08:48Z qiang.xue $
  * @package zii.widgets
  * @since 1.1
  */
@@ -119,7 +118,7 @@ class CBreadcrumbs extends CWidget
 		$links=array();
 		if($this->homeLink===null)
 			$links[]=CHtml::link(Yii::t('zii','Home'),Yii::app()->homeUrl);
-		else if($this->homeLink!==false)
+		elseif($this->homeLink!==false)
 			$links[]=$this->homeLink;
 		foreach($this->links as $label=>$url)
 		{

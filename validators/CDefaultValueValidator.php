@@ -10,11 +10,13 @@
 
 /**
  * Валидатор CDefaultValueValidator присваивает атрибутам определенные значения.
- * Он не проводит валидацию. В основном, он позволяет динамически определить в атрибуте
- * значение по умолчанию.
+ * It does not do validation but rather allows setting a default value at the
+ * same time validation is performed. Usually this happens when calling either
+ * <code>$model->validate()</code> or <code>$model->save()</code>.
+ * [[[[[Он не проводит валидацию. В основном, он позволяет динамически определить в атрибуте
+ * значение по умолчанию.]]]]]
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CDefaultValueValidator.php 3515 2011-12-28 12:29:24Z mdomba $
  * @package system.validators
  */
 class CDefaultValueValidator extends CValidator

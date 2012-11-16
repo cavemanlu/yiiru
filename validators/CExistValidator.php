@@ -24,11 +24,15 @@
  * </ul>
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CExistValidator.php 3549 2012-01-27 15:36:43Z qiang.xue $
  * @package system.validators
  */
 class CExistValidator extends CValidator
 {
+	/**
+	 * @var boolean whether the comparison is case sensitive. Defaults to true.
+	 * Note, by setting it to false, you are assuming the attribute type is string.
+	 */
+	public $caseSensitive=true;
 	/**
 	 * @var string имя ActiveRecord-класса, используемое для поиска валидируемого атрибута.
 	 * По умолчанию - null, т.е. использование ActiveRecord-класса валидируемого атрибута.
@@ -43,6 +47,11 @@ class CExistValidator extends CValidator
 	 */
 	public $attributeName;
 	/**
+	 * @var mixed additional query criteria. Either an array or CDbCriteria.
+	 * This will be combined with the condition that checks if the attribute
+	 * value exists in the corresponding table column.
+	 * This array will be used to instantiate a {@link CDbCriteria} object.
+	 
 	 * @var array дополнительный критерий запроса. Будет объединен с условием,
 	 * проверяющим существование значения атрибута в соответствующем столбце таблицы.
 	 * Данный массив будет использован для создания экземпляра {@link CDbCriteria}
@@ -74,12 +83,14 @@ class CExistValidator extends CValidator
 			throw new CException(Yii::t('yii','Table "{table}" does not have a column named "{column}".',
 				array('{column}'=>$attributeName,'{table}'=>$table->name)));
 
-		$criteria=array('condition'=>$column->rawName.'=:vp','params'=>array(':vp'=>$value));
+		$columnName=$column->rawName;
+		$criteria=new CDbCriteria();
 		if($this->criteria!==array())
-		{
-			$criteria=new CDbCriteria($criteria);
 			$criteria->mergeWith($this->criteria);
-		}
+		$tableAlias = empty($criteria->alias) ? $finder->getTableAlias(true) : $criteria->alias;
+		$valueParamName = CDbCriteria::PARAM_PREFIX.CDbCriteria::$paramCount++;
+		$criteria->addCondition($this->caseSensitive ? "{$tableAlias}.{$columnName}={$valueParamName}" : "LOWER({$tableAlias}.{$columnName})=LOWER({$valueParamName})");
+		$criteria->params[$valueParamName] = $value;
 
 		if(!$finder->exists($criteria))
 		{

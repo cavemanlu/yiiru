@@ -16,7 +16,6 @@
  * Зависимость является неизменной только в случае, если время последней модификации файла остается неизменным.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CFileCacheDependency.php 2799 2011-01-01 19:31:13Z qiang.xue $
  * @package system.caching.dependencies
  * @since 1.0
  */

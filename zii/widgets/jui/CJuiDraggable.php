@@ -34,7 +34,6 @@ Yii::import('zii.widgets.jui.CJuiWidget');
  * за списком возможных опций (пар имя-значение).
  *
  * @author Sebastian Thierer <sebathi@gmail.com>
- * @version $Id: CJuiDraggable.php 2799 2011-01-01 19:31:13Z qiang.xue $
  * @package zii.widgets.jui
  * @since 1.1
  */

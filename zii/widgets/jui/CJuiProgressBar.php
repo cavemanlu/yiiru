@@ -22,7 +22,7 @@ Yii::import('zii.widgets.jui.CJuiWidget');
  *     'value'=>75,
  *     // дополнительные javascript-опции для плагина прогресс-бара
  *     'options'=>array(
- *         'change'=>'js:function(event, ui) {...}',
+ *         'change'=>new CJavaScriptExpression('function(event, ui) {...}'),
  *     ),
  *     'htmlOptions'=>array(
  *         'style'=>'height:20px;'
@@ -35,7 +35,6 @@ Yii::import('zii.widgets.jui.CJuiWidget');
  * за списком возможных опций (пар имя-значение).
  *
  * @author Sebastian Thierer <sebathi@gmail.com>
- * @version $Id: CJuiProgressBar.php 2799 2011-01-01 19:31:13Z qiang.xue $
  * @package zii.widgets.jui
  * @since 1.1
  */

@@ -15,7 +15,6 @@
  * загруженного компонента приложения.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: interfaces.php 3515 2011-12-28 12:29:24Z mdomba $
  * @package system.base
  * @since 1.0
  */
@@ -38,7 +37,6 @@ interface IApplicationComponent
  * Данный интерфейс должен реализовываться классами, поддерживающими функцию кэширования.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: interfaces.php 3515 2011-12-28 12:29:24Z mdomba $
  * @package system.caching
  * @since 1.0
  */
@@ -105,7 +103,6 @@ interface ICache
  * Объекты, реализующие данный интерфейс, должны быть сериализуемы и десереализумы.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: interfaces.php 3515 2011-12-28 12:29:24Z mdomba $
  * @package system.caching
  * @since 1.0
  */
@@ -128,7 +125,6 @@ interface ICacheDependency
  *
  * Данный интерфейс должен реализовываться всеми классами постоянного состояния (такими, как {@link CStatePersister})
  *
- * @version $Id: interfaces.php 3515 2011-12-28 12:29:24Z mdomba $
  * @package system.base
  * @since 1.0
  */
@@ -150,7 +146,6 @@ interface IStatePersister
 /**
  * IFilter - это интерфейс, который должен быть реализован фильтрами действий.
  *
- * @version $Id: interfaces.php 3515 2011-12-28 12:29:24Z mdomba $
  * @package system.base
  * @since 1.0
  */
@@ -170,7 +165,6 @@ interface IFilter
 /**
  * IAction - это интерфейс, который должен быть реализован действиями контроллера.
  *
- * @version $Id: interfaces.php 3515 2011-12-28 12:29:24Z mdomba $
  * @package system.base
  * @since 1.0
  */
@@ -193,7 +187,6 @@ interface IAction
  * Если реализован данный интерфейс, экземпляр провайдера сможет перехватывать
  * вызов удаленного метода (например, для целей журналирования или аутентификации).
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: interfaces.php 3515 2011-12-28 12:29:24Z mdomba $
  * @package system.base
  * @since 1.0
  */
@@ -221,7 +214,6 @@ interface IWebServiceProvider
  * {@link CBaseController}.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: interfaces.php 3515 2011-12-28 12:29:24Z mdomba $
  * @package system.base
  * @since 1.0
  */
@@ -247,7 +239,6 @@ interface IViewRenderer
  * с {@link CWebApplication::user пользовательским компонентом приложения}.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: interfaces.php 3515 2011-12-28 12:29:24Z mdomba $
  * @package system.base
  * @since 1.0
  */
@@ -289,7 +280,6 @@ interface IUserIdentity
  * Пользовательский компонент приложения представляет информацию, идентифицирующую текущего пользователя.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: interfaces.php 3515 2011-12-28 12:29:24Z mdomba $
  * @package system.base
  * @since 1.0
  */
@@ -313,11 +303,22 @@ interface IWebUser
 	/**
 	 * Выполняет проверку доступа для данного пользователя.
 	 * @param string $operation имя проверяемой операции
-	 * @param array $params пары имя-значение, которые будут переданы в бизнес-правила, ассоциированные
-	 * с задачами и ролями, заданными для пользователя
+	 * @param array $params пары имя-значение, которые будут переданы в
+	 * бизнес-правила, ассоциированные с задачами и ролями, заданными для
+	 * пользователя
 	 * @return boolean может ли данный пользователь выполнять операции
 	 */
 	public function checkAccess($operation,$params=array());
+	/**
+	 * Перенаправляет браузер пользователя на страницу входа. Перед этим
+	 * текущий URL-адрес (если это не AJAX-адрес) будет сохранен в свойстве
+	 * {@link returnUrl}, чтобы браузер пользователя мог перейти обратно к
+	 * текущей странице после успешного входа. Необходимо убедиться в установке
+	 * свойства {@link loginUrl}, чтобы браузер пользователя мог перейти на
+	 * определенный URL-адрес после вызова данного метода. После вызова данного
+	 * метода текущий выполняемый запрос будет завершён
+	 */
+	public function loginRequired();
 }
 
 
@@ -327,7 +328,6 @@ interface IWebUser
  * В основном менеджер аутентификации отвечает за обеспечение контроля доступа, основанного на ролях (RBAC).
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: interfaces.php 3515 2011-12-28 12:29:24Z mdomba $
  * @package system.base
  * @since 1.0
  */
@@ -500,7 +500,6 @@ interface IAuthManager
  * и не доступными в классе компонента.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: interfaces.php 3515 2011-12-28 12:29:24Z mdomba $
  * @package system.base
  */
 interface IBehavior
@@ -532,7 +531,6 @@ interface IBehavior
  * виджета вызовом метода {@link CBaseController::createWidget}.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: interfaces.php 3515 2011-12-28 12:29:24Z mdomba $
  * @package system.web
  * @since 1.1
  */
@@ -555,7 +553,6 @@ interface IWidgetFactory
  * Кроме передаваемых данных, провайдеры поддерживают пагинацию и сортировку.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: interfaces.php 3515 2011-12-28 12:29:24Z mdomba $
  * @package system.web
  * @since 1.1
  */
@@ -601,4 +598,32 @@ interface IDataProvider
 	 * @return CPagination объект пагинации. Если возвращается значение false, то пагинация отключена
 	 */
 	public function getPagination();
+}
+
+
+/**
+ * Интерфейс ILogFilter должен быть реализован классами фильтров журналов.
+ *
+ * A log filter preprocesses the logged messages before they are handled by a log route.
+ * You can attach classes that implement ILogFilter to {@link CLogRoute::$filter}.
+ *
+
+ * @package system.logging
+ * @since 1.1.11
+ */
+interface ILogFilter
+{
+	/**
+	 * This method should be implemented to perform actual filtering of log messages
+	 * by working on the array given as the first parameter.
+	 * Implementation might reformat, remove or add information to logged messages.
+	 * @param array $logs list of messages. Each array element represents one message
+	 * with the following structure:
+	 * array(
+	 *   [0] => message (string)
+	 *   [1] => level (string)
+	 *   [2] => category (string)
+	 *   [3] => timestamp (float, obtained by microtime(true));
+	 */
+	public function filter(&$logs);
 }

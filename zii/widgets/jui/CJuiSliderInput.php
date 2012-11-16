@@ -33,13 +33,13 @@ Yii::import('zii.widgets.jui.CJuiInputWidget');
  *
  * Виджет также может использоваться в режиме диапазона, при котором используются 2 слайдера (ползунка) для задания диапазона.
  * В данном режиме свойства {@link attribute} и {@link maxAttribute} будут определять имена атрибутов
- * минимального и максимального значений диапазона соответствтенно. Например:
+ * минимального и максимального значений диапазона соответственно. Например:
  *
  * <pre>
  * $this->widget('zii.widgets.jui.CJuiSliderInput', array(
  *     'model'=>$model,
  *     'attribute'=>'timeMin',
- *     'maxAttribute'=>'timeMax,
+ *     'maxAttribute'=>'timeMax',
  *     // дополнительные javascript-опции для плагина слайдера
  *     'options'=>array(
  *         'range'=>true,
@@ -47,6 +47,7 @@ Yii::import('zii.widgets.jui.CJuiInputWidget');
  *         'max'=>24,
  *     ),
  * ));
+ * </pre>
  *
  * Если требуется использовать событие слайдера, измените значение свойства события на 'stop' или 'change'.
  *
@@ -55,7 +56,6 @@ Yii::import('zii.widgets.jui.CJuiInputWidget');
  * за списком возможных опций (пар имя-значение).
  *
  * @author Sebastian Thierer <sebathi@gmail.com>
- * @version $Id: CJuiSliderInput.php 2948 2011-02-09 13:27:05Z haertl.mike $
  * @package zii.widgets.jui
  * @since 1.1
  */
@@ -123,20 +123,15 @@ class CJuiSliderInput extends CJuiInputWidget
 			if($this->value!==null)
 				$this->options['value']=$this->value;
 		}
-		
+
 
 		$idHidden = $this->htmlOptions['id'];
-		$nameHidden = $name;
-
 		$this->htmlOptions['id']=$idHidden.'_slider';
-		$this->htmlOptions['name']=$nameHidden.'_slider';
-
-		echo CHtml::openTag($this->tagName,$this->htmlOptions);
-		echo CHtml::closeTag($this->tagName);
+		echo CHtml::tag($this->tagName,$this->htmlOptions,'');
 
 		$this->options[$this->event]= $isRange ?
-			"js:function(e,ui){ v=ui.values; jQuery('#{$idHidden}').val(v[0]); jQuery('#{$idHidden}_end').val(v[1]); }":
-			'js:function(event, ui) { jQuery(\'#'. $idHidden .'\').val(ui.value); }';
+			new CJavaScriptExpression("function(e,ui){ v=ui.values; jQuery('#{$idHidden}').val(v[0]); jQuery('#{$idHidden}_end').val(v[1]); }"):
+			new CJavaScriptExpression('function(event, ui) { jQuery(\'#'. $idHidden .'\').val(ui.value); }');
 
 		$options=empty($this->options) ? '' : CJavaScript::encode($this->options);
 

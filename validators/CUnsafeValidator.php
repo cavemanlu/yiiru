@@ -12,7 +12,6 @@
  * Валидатор CUnsafeValidator помечает связанные атрибуты как небезопасные так, что они не могут быть присвоены пакетно.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CUnsafeValidator.php 2799 2011-01-01 19:31:13Z qiang.xue $
  * @package system.validators
  * @since 1.0
  */

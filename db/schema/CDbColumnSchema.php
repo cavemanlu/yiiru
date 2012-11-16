@@ -11,8 +11,16 @@
 /**
  * Класс CDbColumnSchema описывает метаданные столбца таблицы базы данных.
  *
+ * Может использоваться в AR-объектах в методах запросов таких, как
+ * CActiveRecord::find and CActiveRecord::findAll.
+ *
+ * $criteria=new CDbCriteria();
+ * $criteria->compare('status',Post::STATUS_ACTIVE);
+ * $criteria->addInCondition('id',array(1,2,3,4,5,6));
+ *
+ * $posts = Post::model()->findAll($criteria);
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CDbColumnSchema.php 3558 2012-02-09 17:39:04Z alexander.makarow $
  * @package system.db.schema
  * @since 1.0
  */
@@ -35,7 +43,7 @@ class CDbColumnSchema extends CComponent
 	 */
 	public $dbType;
 	/**
-	 * @var string тип столбцац в PHP-скриптах
+	 * @var string тип столбца в PHP-скриптах
 	 */
 	public $type;
 	/**
@@ -67,11 +75,19 @@ class CDbColumnSchema extends CComponent
 	 * @since 1.1.7
 	 */
 	public $autoIncrement=false;
+	/**
+	 * @var string comment of this column. Default value is empty string which means that no comment
+	 * has been set for the column. Null value means that RDBMS does not support column comments
+	 * at all (SQLite) or comment retrieval for the active RDBMS is not yet supported by the framework.
+	 * @since 1.1.13
+	 */
+	public $comment='';
 
 
 	/**
 	 * Инициализирует столбец типом в БД и значением по умолчанию.
-	 * Устанавливает тип столбца в PHP-скриптах, размер, точность, масштаб соответствующими значению по умолчанию
+	 * Устанавливает тип столбца в PHP-скриптах, размер, точность, масштаб
+	 * соответствующими значению по умолчанию
 	 * @param string $dbType тип столбца в БД
 	 * @param mixed $defaultValue значение по умолчанию
 	 */
@@ -92,9 +108,9 @@ class CDbColumnSchema extends CComponent
 	{
 		if(stripos($dbType,'int')!==false && stripos($dbType,'unsigned int')===false)
 			$this->type='integer';
-		else if(stripos($dbType,'bool')!==false)
+		elseif(stripos($dbType,'bool')!==false)
 			$this->type='boolean';
-		else if(preg_match('/(real|floa|doub)/i',$dbType))
+		elseif(preg_match('/(real|floa|doub)/i',$dbType))
 			$this->type='double';
 		else
 			$this->type='string';

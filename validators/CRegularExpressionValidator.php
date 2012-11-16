@@ -13,7 +13,6 @@
  * Вы можете инвертировать логику валидации при помощи свойства {@link not} (доступно с версии 1.1.5).
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CRegularExpressionValidator.php 3120 2011-03-25 01:50:48Z qiang.xue $
  * @package system.validators
  * @since 1.0
  */

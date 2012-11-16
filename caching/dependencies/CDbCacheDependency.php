@@ -17,7 +17,6 @@
  * Это соединение БД, используемое для выполнения запроса.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CDbCacheDependency.php 3204 2011-05-05 21:36:32Z alexander.makarow $
  * @package system.caching.dependencies
  * @since 1.0
  */

@@ -22,7 +22,6 @@
  * Для определения метода фильтрации присвойте свойству {@link filter} имя функции.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CFilterValidator.php 2799 2011-01-01 19:31:13Z qiang.xue $
  * @package system.validators
  * @since 1.0
  */

@@ -48,7 +48,6 @@
  * соответствующей модели для определения метки
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CFormInputElement.php 3579 2012-02-17 21:43:44Z qiang.xue@gmail.com $
  * @package system.web.form
  * @since 1.1
  */

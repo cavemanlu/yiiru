@@ -21,7 +21,6 @@
  * @property string $viewPath путь представления генератора
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CCodeGenerator.php 3426 2011-10-25 00:01:09Z alexander.makarow $
  * @package system.gii
  * @since 1.1.2
  */
@@ -75,6 +74,8 @@ class CCodeGenerator extends CController
 	/**
 	 * Действие предпросмотра кода.
 	 * Данное действие показывает сгенерированный код
+	 * @throws CHttpException вызывается, если невозможно найти сгенерированный
+	 * код
 	 */
 	public function actionCode()
 	{
@@ -92,6 +93,8 @@ class CCodeGenerator extends CController
 	/**
 	 * Действие сравнения кода. Данное действие показывает различия между
 	 * новым сгенерированным кодом и соответствующим существующим кодом
+	 * @throws CHttpException вызывается, если невозможно найти сгенерированный
+	 * код
 	 */
 	public function actionDiff()
 	{
@@ -103,7 +106,7 @@ class CCodeGenerator extends CController
 			$file=$model->files[$_GET['id']];
 			if(!in_array($file->type,array('php', 'txt','js','css')))
 				$diff=false;
-			else if($file->operation===CCodeFile::OP_OVERWRITE)
+			elseif($file->operation===CCodeFile::OP_OVERWRITE)
 				$diff=TextDiff::compare(file_get_contents($file->path), $file->content);
 			else
 				$diff='';

@@ -25,7 +25,6 @@
  * сообщения, удовлетворяющие условиям обоих фильтров.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CLogRoute.php 3515 2011-12-28 12:29:24Z mdomba $
  * @package system.logging
  * @since 1.0
  */
@@ -42,13 +41,20 @@ abstract class CLogRoute extends CComponent
 	/**
 	 * @var string список категорий, разделенных запятой или пробелом. По умолчанию пусто, что означает - все категории.
 	 */
-	public $categories='';
+	public $categories=array();
+	/**
+	 * @var mixed array of categories, or string list separated by comma or space, to EXCLUDE from logs.
+	 * Defaults to empty array, meaning no categories are excluded.
+	 * This will exclude any categories after $categories has been ran.
+	 */
+	public $except=array();
 	/**
 	 * @var mixed дополнительный фильтр (например, {@link CLogFilter}), применяемый в сообщениям журнала.
 	 * Значение данного свойства будет передано методу {@link Yii::createComponent} для создания
 	 * объекта фильтра журнала. Поэтому, оно может быть либо строкой, представляющей имя класса фильтра
 	 * или массивом, представляющим конфигурацию фильтра.
-	 * В общем, класс фильтра журнала должен быть классом {@link CLogFilter} или его наследником.
+	 * В общем, класс фильтра журнала должен реализовывать интерфейс {@link ILogFilter}.
+	 * If you want to apply multiple filters you can use {@link CChainedLogFilter} to do so.
 	 * По умолчанию - null, что значит - без использования фильтра
 	 */
 	public $filter;
@@ -56,7 +62,7 @@ abstract class CLogRoute extends CComponent
 	 * @var array журналы, собранные данным журнальным маршрутом
 	 * @since 1.1.0
 	 */
-	public $logs;
+	public $logs=array();
 
 
 	/**
@@ -87,13 +93,14 @@ abstract class CLogRoute extends CComponent
 	 */
 	public function collectLogs($logger, $processLogs=false)
 	{
-		$logs=$logger->getLogs($this->levels,$this->categories);
+		$logs=$logger->getLogs($this->levels,$this->categories,$this->except);
 		$this->logs=empty($this->logs) ? $logs : array_merge($this->logs,$logs);
 		if($processLogs && !empty($this->logs))
 		{
 			if($this->filter!==null)
 				Yii::createComponent($this->filter)->filter($this->logs);
-			$this->processLogs($this->logs);
+			if($this->logs!==array())
+				$this->processLogs($this->logs);
 			$this->logs=array();
 		}
 	}

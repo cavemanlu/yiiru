@@ -27,7 +27,6 @@
  * @property CMapIterator $iterator итератор для обхода атрибутов модели
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CModel.php 3515 2011-12-28 12:29:24Z mdomba $
  * @package system.base
  * @since 1.0
  */
@@ -65,7 +64,11 @@ abstract class CModel extends CComponent implements IteratorAggregate, ArrayAcce
 	 *   И класс валидатора - это класс, наследующий класс {@link CValidator}.</li>
 	 * <li>on: определяет сценарии, для которых должно быть выполнено правило валидации.
 	 *   Различные сценарии разделяются запятыми. Если данная опция не установлена, правило
-	 *   будет применено ко всем сценариям. За деталями о данной опции обратитесь к свойству {@link scenario}.</li>
+	 *   будет применено ко всем сценариям, не перечисленным в пункте "except". За деталями
+	 *   о данной опции обратитесь к свойству {@link scenario}.</li>
+	 * <li>except:  определяет сценарии, для которых НЕ должно быть выполнено правило валидации.
+	 *   Различные сценарии разделяются запятыми. За деталями
+	 *   о данной опции обратитесь к свойству {@link scenario}.</li>
 	 * <li>дополнительные параметры, используемые для инициализации соответствующих свойств валидатора.
 	 *   За списком возможных свойств обращайтесь к API класса индивидуального валидатора.</li>
 	 * </ul>
@@ -402,10 +405,10 @@ abstract class CModel extends CComponent implements IteratorAggregate, ArrayAcce
 			if(is_array($error))
 			{
 				foreach($error as $e)
-					$this->_errors[$attribute][]=$e;
+					$this->addError($attribute, $e);
 			}
 			else
-				$this->_errors[$attribute][]=$error;
+				$this->addError($attribute, $error);
 		}
 	}
 
@@ -476,7 +479,7 @@ abstract class CModel extends CComponent implements IteratorAggregate, ArrayAcce
 		{
 			if(isset($attributes[$name]))
 				$this->$name=$value;
-			else if($safeOnly)
+			elseif($safeOnly)
 				$this->onUnsafeAttribute($name,$value);
 		}
 	}
@@ -517,7 +520,9 @@ abstract class CModel extends CComponent implements IteratorAggregate, ArrayAcce
 	 * могут быть массово присвоены.
 	 *
 	 * Правило валидации будет выполнено при вызове метода {@link validate()},
-	 * если его опция 'on' не установлена или содержит значение текущего
+	 * если его опция 'except' value does not contain current scenario value while
+	 * 'on' option is not set or contains the current scenario value.
+	 'on' не установлена или содержит значение текущего
 	 * сценария.
 	 *
 	 * Атрибут может быть массово присвоен, если он ассоциирован с

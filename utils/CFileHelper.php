@@ -12,7 +12,6 @@
  * Класс CFileHelper предоставляет набор вспомогательных методов для обычных операций файловой системы.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CFileHelper.php 3289 2011-06-18 21:20:13Z qiang.xue $
  * @package system.utils
  * @since 1.0
  */
@@ -134,7 +133,7 @@ class CFileHelper
 					if(isset($options['newFileMode']))
 						@chmod($dst.DIRECTORY_SEPARATOR.$file, $options['newFileMode']);
 				}
-				else if($level)
+				elseif($level)
 					self::copyDirectoryRecursive($path,$dst.DIRECTORY_SEPARATOR.$file,$base.'/'.$file,$fileTypes,$exclude,$level-1,$options);
 			}
 		}
@@ -173,7 +172,7 @@ class CFileHelper
 			{
 				if($isFile)
 					$list[]=$path;
-				else if($level)
+				elseif($level)
 					$list=array_merge($list,self::findFilesRecursive($path,$base.'/'.$file,$fileTypes,$exclude,$level-1));
 			}
 		}
@@ -186,12 +185,12 @@ class CFileHelper
 	 * @param string $base относительный путь к исходной директории
 	 * @param string $file имя файла или директории
 	 * @param boolean $isFile файл ли это
-	 * @param array $fileTypes список расширений файлов (без точки). Только файлы с такими расширениями будут считаться правильными.
+	 * @param array $fileTypes список допустимых расширений файлов (без точки)
 	 * @param array $exclude список исключений файлов и директорий. Каждое исключение
 	 * может быть именем или путем (к файлу или директории).
-	 * Если имя файла или директории соответствует исключению, этот файл или директория считается не допустимым. Например,
-	 * исключение '.svn' говорит, что файлы и директории с именем '.svn' недопустимы, а исключение '/a/b' - что недопустимы
-	 * файлы или папки, находящиеся по пути '$src/a/b'. Помните, что надо использовать в качестве разделителя знак '/'
+	 * Если имя файла или директории соответствует исключению, возвращается значение false. Например,
+	 * исключение '.svn' возвратит false для всех файлов и директорий с именем '.svn', а исключение '/a/b' - для
+	 * файлов или папок, находящихся по пути '$src/a/b'. Помните, что надо использовать в качестве разделителя знак '/'
 	 * вместо константы DIRECTORY_SEPARATOR.
 	 * @return boolean является ли файл или папка допустимыми
 	 */
@@ -221,7 +220,9 @@ class CFileHelper
 	 * @param string $file имя файла
 	 * @param string $magicFile имя "магического" файла данных MIME типов, обычно что-то вроде /path/to/magic.mime.
 	 * Передается вторым параметром в функцию {@link http://php.net/manual/en/function.finfo-open.php finfo_open}.
-	 * Параметр доступен с версии 1.1.3.
+	 * Magic file format described in {@link http://linux.die.net/man/5/magic man 5 magic}, note that this file does not
+	 * contain a standard PHP array as you might suppose. Specified magic file will be used only when fileinfo
+	 * PHP extension is available. This parameter has been available since version 1.1.3.
 	 * @param boolean $checkExtension проверять ли расширение файла в случае, если MIME-тип не может быть определен на
 	 * основании функций finfo или mim_content_type. По умолчанию - true. Параметр доступен с версии 1.1.4.
 	 * @return string MIME-тип. Null, если MIME-тип не может быть определен
@@ -254,14 +255,18 @@ class CFileHelper
 	 */
 	public static function getMimeTypeByExtension($file,$magicFile=null)
 	{
-		static $extensions;
-		if($extensions===null)
-			$extensions=$magicFile===null ? require(Yii::getPathOfAlias('system.utils.mimeTypes').'.php') : $magicFile;
+		static $extensions, $customExtensions=array();
+		if($magicFile===null && $extensions===null)
+			$extensions=require(Yii::getPathOfAlias('system.utils.mimeTypes').'.php');
+		elseif($magicFile!==null && !isset($customExtensions[$magicFile]))
+			$customExtensions[$magicFile]=require($magicFile);
 		if(($ext=pathinfo($file, PATHINFO_EXTENSION))!=='')
 		{
 			$ext=strtolower($ext);
-			if(isset($extensions[$ext]))
+			if($magicFile===null && isset($extensions[$ext]))
 				return $extensions[$ext];
+			elseif($magicFile!==null && isset($customExtensions[$magicFile][$ext]))
+				return $customExtensions[$magicFile][$ext];
 		}
 		return null;
 	}

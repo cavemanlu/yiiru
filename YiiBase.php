@@ -6,22 +6,21 @@
  * @link http://www.yiiframework.com/
  * @copyright Copyright &copy; 2008-2011 Yii Software LLC
  * @license http://www.yiiframework.com/license/
- * @version $Id: YiiBase.php 3597 2012-02-19 21:22:08Z qiang.xue@gmail.com $
  * @package system
  * @since 1.0
  */
 
 /**
- * Получает временную отметку начала работы приложения.
+ * Определяет временную отметку начала работы приложения.
  */
 defined('YII_BEGIN_TIME') or define('YII_BEGIN_TIME',microtime(true));
 /**
- * Данная константа определяет, находится ли приложения в режиме отладки. По
+ * Определяет, находится ли приложения в режиме отладки. По
  * умолчанию - false.
  */
 defined('YII_DEBUG') or define('YII_DEBUG',false);
 /**
- * Данная константа определяет количество информации (имя файла и номер строки)
+ * Определяет количество информации (имя файла и номер строки)
  * стека вызовов должно журналироваться методом Yii::trace(). По умолчанию - 0,
  * т.е. без информации стека. Если значение больше 0, стек вызовов будет
  * журналироваться не глубже данного числа. Помните, рассматриваются только
@@ -55,7 +54,6 @@ defined('YII_ZII_PATH') or define('YII_ZII_PATH',YII_PATH.DIRECTORY_SEPARATOR.'z
  * {@link Yii}, где вы можете настраивать методы YiiBase
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: YiiBase.php 3597 2012-02-19 21:22:08Z qiang.xue@gmail.com $
  * @package system
  * @since 1.0
  */
@@ -90,7 +88,7 @@ class YiiBase
 	 */
 	public static function getVersion()
 	{
-		return '1.1.11-dev';
+		return '1.1.13-dev';
 	}
 
 	/**
@@ -138,7 +136,7 @@ class YiiBase
 	}
 
 	/**
-	 * Возвращает синглтон приложения; null, если синглтон еще не был создан
+	 * Возвращает синглтон приложения или null, если синглтон еще не был создан
 	 * @return CApplication синглтон приложения; null, если синглтон еще не был создан
 	 */
 	public static function app()
@@ -196,7 +194,7 @@ class YiiBase
 			$type=$config;
 			$config=array();
 		}
-		else if(isset($config['class']))
+		elseif(isset($config['class']))
 		{
 			$type=$config['class'];
 			unset($config['class']);
@@ -212,9 +210,9 @@ class YiiBase
 			$args=func_get_args();
 			if($n===2)
 				$object=new $type($args[1]);
-			else if($n===3)
+			elseif($n===3)
 				$object=new $type($args[1],$args[2]);
-			else if($n===4)
+			elseif($n===4)
 				$object=new $type($args[1],$args[2],$args[3]);
 			else
 			{
@@ -291,7 +289,7 @@ class YiiBase
 					if(is_file($classFile))
 						require($classFile);
 					else
-						throw new CException(Yii::t('yii','Alias "{alias}" is invalid. Make sure it points to an existing PHP file.',array('{alias}'=>$alias)));
+						throw new CException(Yii::t('yii','Alias "{alias}" is invalid. Make sure it points to an existing PHP file and the file is readable.',array('{alias}'=>$alias)));
 					self::$_imports[$alias]=$alias;
 				}
 				else
@@ -325,7 +323,7 @@ class YiiBase
 					if(is_file($path.'.php'))
 						require($path.'.php');
 					else
-						throw new CException(Yii::t('yii','Alias "{alias}" is invalid. Make sure it points to an existing PHP file.',array('{alias}'=>$alias)));
+						throw new CException(Yii::t('yii','Alias "{alias}" is invalid. Make sure it points to an existing PHP file and the file is readable.',array('{alias}'=>$alias)));
 					self::$_imports[$alias]=$className;
 				}
 				else
@@ -365,12 +363,12 @@ class YiiBase
 	{
 		if(isset(self::$_aliases[$alias]))
 			return self::$_aliases[$alias];
-		else if(($pos=strpos($alias,'.'))!==false)
+		elseif(($pos=strpos($alias,'.'))!==false)
 		{
 			$rootAlias=substr($alias,0,$pos);
 			if(isset(self::$_aliases[$rootAlias]))
 				return self::$_aliases[$alias]=rtrim(self::$_aliases[$rootAlias].DIRECTORY_SEPARATOR.str_replace('.',DIRECTORY_SEPARATOR,substr($alias,$pos+1)),'*'.DIRECTORY_SEPARATOR);
-			else if(self::$_app instanceof CWebApplication)
+			elseif(self::$_app instanceof CWebApplication)
 			{
 				if(self::$_app->findModule($rootAlias)!==null)
 					return self::getPathOfAlias($alias);
@@ -404,7 +402,7 @@ class YiiBase
 		// use include so that the error PHP file may appear
 		if(isset(self::$classMap[$className]))
 			include(self::$classMap[$className]);
-		else if(isset(self::$_coreClasses[$className]))
+		elseif(isset(self::$_coreClasses[$className]))
 			include(YII_PATH.self::$_coreClasses[$className]);
 		else
 		{
@@ -419,6 +417,11 @@ class YiiBase
 						if(is_file($classFile))
 						{
 							include($classFile);
+							if(YII_DEBUG && basename(realpath($classFile))!==$className.'.php')
+								throw new CException(Yii::t('yii','Class name "{class}" does not match class file "{file}".', array(
+									'{class}'=>$className,
+									'{file}'=>$classFile,
+								)));
 							break;
 						}
 					}
@@ -552,21 +555,29 @@ class YiiBase
 	/**
 	 * Переводит сообщение на определенный язык.
 	 * Данный метод поддерживает выбор формата (см. {@link CChoiceFormat}),
-	 * т.е. возвращаемое сообщение будет выбрано среди нескольких согласно переданному числу.
-	 * В основном данная функция используется для решения вопросов формата множественных чисел,
-	 * если в языке сообщение имеет различный вид для различных чисел.
-	 * @param string $category категория сообщения. Используйте только буквенные символы. Примечание: категория 'yii'
-	 * зарезервирована для использования в коде ядра фреймворка Yii. Обратитесь к {@link CPhpMessageSource}
-	 * за дополнительной информацией о категориях сообщений
+	 * т.е. возвращаемое сообщение будет выбрано среди нескольких согласно
+	 * переданному числу. Главным образом, данная функция используется для
+	 * решения вопросов формата множественных чисел, если в языке сообщение
+	 * имеет различный вид для различных чисел
+	 * 
+	 * @param string $category категория сообщения. Используйте только
+	 * буквенные символы. Примечание: категория 'yii' зарезервирована для
+	 * использования в коде ядра фреймворка Yii. Обратитесь к
+	 * {@link CPhpMessageSource} за дополнительной информацией о категориях
+	 * сообщений
 	 * @param string $message оригинальное сообщение
-	 * @param array $params параметры, применяемые к сообщению с использованием <code>strtr</code>.
-	 * Первый параметр может быть числом без ключа.
-	 * В этом случае метод будет вызывать метод {@link CChoiceFormat::format} для выбора
-	 * соответствующего перевода. Начиная с версии 1.1.6 вы можете передать параметр для метода {@link CChoiceFormat::format}
-	 * или формат плюральных форм без включения их в массив
-	 * @param string $source какой компонент приложения использовать в качестве источника сообщений.
-	 * По умолчанию - null, т.е. использовать 'coreMessages' для сообщений, принадлежащих
-	 * к категории 'yii', и 'messages' - для остальных собщений
+	 * @param array $params параметры, применяемые к сообщению с
+	 * использованием <code>strtr</code>. Первый параметр может быть числом без
+	 * ключа. В этом случае метод будет вызывать метод
+	 * {@link CChoiceFormat::format} для выбора соответствующего перевода.
+	 * Начиная с версии 1.1.6 вы можете передать параметр для метода
+	 * {@link CChoiceFormat::format} или формат плюральных форм без включения
+	 * их в массив, поэтому данный параметр поддерживает переменную
+	 * <code>{n}</code> в строке перевода
+	 * @param string $source какой компонент приложения использовать в качестве
+	 * источника сообщений. По умолчанию - null, т.е. используется
+	 * 'coreMessages' для сообщений, принадлежащих к категории 'yii', и
+	 * 'messages' - для остальных собщений
 	 * @param string $language целевой язык. Если null (по умолчанию), то будет
 	 * использоваться {@link CApplication::getLanguage язык приложения}
 	 * @return string переведенное сообщение
@@ -684,9 +695,9 @@ class YiiBase
 		'CTypedMap' => '/collections/CTypedMap.php',
 		'CConsoleApplication' => '/console/CConsoleApplication.php',
 		'CConsoleCommand' => '/console/CConsoleCommand.php',
-		'CConsoleCommandRunner' => '/console/CConsoleCommandRunner.php',
-		'CConsoleCommandEvent' => '/console/CConsoleCommandEvent.php',
 		'CConsoleCommandBehavior' => '/console/CConsoleCommandBehavior.php',
+		'CConsoleCommandEvent' => '/console/CConsoleCommandEvent.php',
+		'CConsoleCommandRunner' => '/console/CConsoleCommandRunner.php',
 		'CHelpCommand' => '/console/CHelpCommand.php',
 		'CDbCommand' => '/db/CDbCommand.php',
 		'CDbConnection' => '/db/CDbConnection.php',
@@ -707,8 +718,10 @@ class YiiBase
 		'CMssqlCommandBuilder' => '/db/schema/mssql/CMssqlCommandBuilder.php',
 		'CMssqlPdoAdapter' => '/db/schema/mssql/CMssqlPdoAdapter.php',
 		'CMssqlSchema' => '/db/schema/mssql/CMssqlSchema.php',
+		'CMssqlSqlsrvPdoAdapter' => '/db/schema/mssql/CMssqlSqlsrvPdoAdapter.php',
 		'CMssqlTableSchema' => '/db/schema/mssql/CMssqlTableSchema.php',
 		'CMysqlColumnSchema' => '/db/schema/mysql/CMysqlColumnSchema.php',
+		'CMysqlCommandBuilder' => '/db/schema/mysql/CMysqlCommandBuilder.php',
 		'CMysqlSchema' => '/db/schema/mysql/CMysqlSchema.php',
 		'CMysqlTableSchema' => '/db/schema/mysql/CMysqlTableSchema.php',
 		'COciColumnSchema' => '/db/schema/oci/COciColumnSchema.php',
@@ -732,6 +745,7 @@ class YiiBase
 		'CGettextFile' => '/i18n/gettext/CGettextFile.php',
 		'CGettextMoFile' => '/i18n/gettext/CGettextMoFile.php',
 		'CGettextPoFile' => '/i18n/gettext/CGettextPoFile.php',
+		'CChainedLogFilter' => '/logging/CChainedLogFilter.php',
 		'CDbLogRoute' => '/logging/CDbLogRoute.php',
 		'CEmailLogRoute' => '/logging/CEmailLogRoute.php',
 		'CFileLogRoute' => '/logging/CFileLogRoute.php',
@@ -809,6 +823,7 @@ class YiiBase
 		'CWebUser' => '/web/auth/CWebUser.php',
 		'CFilter' => '/web/filters/CFilter.php',
 		'CFilterChain' => '/web/filters/CFilterChain.php',
+		'CHttpCacheFilter' => '/web/filters/CHttpCacheFilter.php',
 		'CInlineFilter' => '/web/filters/CInlineFilter.php',
 		'CForm' => '/web/form/CForm.php',
 		'CFormButtonElement' => '/web/form/CFormButtonElement.php',
@@ -820,6 +835,7 @@ class YiiBase
 		'CHtml' => '/web/helpers/CHtml.php',
 		'CJSON' => '/web/helpers/CJSON.php',
 		'CJavaScript' => '/web/helpers/CJavaScript.php',
+		'CJavaScriptExpression' => '/web/helpers/CJavaScriptExpression.php',
 		'CPradoViewRenderer' => '/web/renderers/CPradoViewRenderer.php',
 		'CViewRenderer' => '/web/renderers/CViewRenderer.php',
 		'CWebService' => '/web/services/CWebService.php',

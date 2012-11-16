@@ -40,18 +40,20 @@ Yii::import('zii.widgets.jui.CJuiInputWidget');
  * посредством ajax-запроса.
  *
  * @author Sebastian Thierer <sebathi@gmail.com>
- * @version $Id: CJuiAutoComplete.php 2799 2011-01-01 19:31:13Z qiang.xue $
  * @package zii.widgets.jui
  * @since 1.1.2
  */
 class CJuiAutoComplete extends CJuiInputWidget
 {
 	/**
-	 * @var mixed местоположение списка элементов джля автозаполенения. Может быть:
+	 * @var mixed местоположение списка элементов джля автозаполенения. Может
+	 * быть:
 	 * <ul>
 	 * <li>массивом с локальными данными;</li>
-     * <li>строкой, определяющей URL-адрес, возвращающий элементы автозаполнения в виде JSON-данных;</li>
-     * <li>обратный вызов javascript. Убедитесь, что в данном случае есть префикс "js:".</li>
+     * <li>строкой, определяющей URL-адрес, возвращающий элементы
+	 * автозаполнения в виде JSON-данных;</li>
+     * <li>обратный вызов javascript. Убедитесь, что в данном случае обратный
+	 * вызов заключен в {@link CJavaScriptExpression}.</li>
      * </ul>
 	 */
 	public $source = array();

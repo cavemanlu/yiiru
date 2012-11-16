@@ -15,7 +15,6 @@
  * Обратитесь к документации {@link CCache} за информацией об обычных операциях кэша, поддерживаемых компонентом CApcCache.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CApcCache.php 3515 2011-12-28 12:29:24Z mdomba $
  * @package system.caching
  * @since 1.0
  */
@@ -24,8 +23,9 @@ class CApcCache extends CCache
 	/**
 	 * Инициализирует данный компонент приложения.
 	 * Метод требуется интерфейсом {@link IApplicationComponent}.
-	 * Проверяет доступность APC.
-	 * @throws CException вызывается, если расширение APC не загружено или отключено
+	 * Проверяет доступность расширения APC
+	 * @throws CException вызывается, если расширение APC не загружено или
+	 * отключено
 	 */
 	public function init()
 	{

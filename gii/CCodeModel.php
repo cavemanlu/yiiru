@@ -30,7 +30,6 @@
  * @property string $stickyFile путь к файлу, хранящему значения "липких" атрибутов
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CCodeModel.php 3547 2012-01-24 10:07:28Z mdomba $
  * @package system.gii
  * @since 1.1.2
  */
@@ -283,7 +282,7 @@ abstract class CCodeModel extends CFormModel
 		$templates=$this->getTemplates();
 		if(isset($templates[$this->template]))
 			return $templates[$this->template];
-		else if(empty($templates))
+		elseif(empty($templates))
 			throw new CHttpException(500,'No templates are available.');
 		else
 			throw new CHttpException(500,'Invalid template selection.');
@@ -331,9 +330,9 @@ abstract class CCodeModel extends CFormModel
 		{
 			if($file->error!==null)
 				$output.="<span class=\"error\">generating {$file->relativePath}<br/>           {$file->error}</span>\n";
-			else if($file->operation===CCodeFile::OP_NEW && $this->confirmed($file))
+			elseif($file->operation===CCodeFile::OP_NEW && $this->confirmed($file))
 				$output.=' generated '.$file->relativePath."\n";
-			else if($file->operation===CCodeFile::OP_OVERWRITE && $this->confirmed($file))
+			elseif($file->operation===CCodeFile::OP_OVERWRITE && $this->confirmed($file))
 				$output.=' overwrote '.$file->relativePath."\n";
 			else
 				$output.='   skipped '.$file->relativePath."\n";

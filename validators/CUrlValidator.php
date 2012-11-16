@@ -12,7 +12,6 @@
  * Валидатор CUrlValidator проверяет, чтобы атрибут был допустимым URL-адресом протоколов http и https.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CUrlValidator.php 3242 2011-05-28 14:31:04Z qiang.xue $
  * @package system.validators
  * @since 1.0
  */
@@ -42,6 +41,12 @@ class CUrlValidator extends CValidator
 	 * т.е. пустой атрибут считается валидным
 	 */
 	public $allowEmpty=true;
+	/**
+	 * @var boolean whether validation process should care about IDN (internationalized domain names). Default
+	 * value is false which means that validation of URLs containing IDN will always fail.
+	 * @since 1.1.13
+	 */
+	public $validateIDN=false;
 
 	/**
 	 * Валидирует отдельный атрибут.
@@ -75,6 +80,9 @@ class CUrlValidator extends CValidator
 	{
 		if(is_string($value) && strlen($value)<2000)  // make sure the length is limited to avoid DOS attacks
 		{
+			if($this->validateIDN)
+				$value=$this->encodeIDN($value);
+
 			if($this->defaultScheme!==null && strpos($value,'://')===false)
 				$value=$this->defaultScheme.'://'.$value;
 
@@ -84,7 +92,7 @@ class CUrlValidator extends CValidator
 				$pattern=$this->pattern;
 
 			if(preg_match($pattern,$value))
-				return $value;
+				return $this->validateIDN ? $this->decodeIDN($value) : $value;
 		}
 		return false;
 	}
@@ -99,6 +107,19 @@ class CUrlValidator extends CValidator
 	 */
 	public function clientValidateAttribute($object,$attribute)
 	{
+		if($this->validateIDN)
+		{
+			Yii::app()->getClientScript()->registerCoreScript('punycode');
+			// punycode.js works only with the domains - so we have to extract it before punycoding
+			$validateIDN='
+var info = value.match(/^(.+:\/\/|)([^/]+)/);
+if (info)
+	value = info[1] + punycode.toASCII(info[2]);
+';
+		}
+		else
+			$validateIDN='';
+
 		$message=$this->message!==null ? $this->message : Yii::t('yii','{attribute} is not a valid URL.');
 		$message=strtr($message, array(
 			'{attribute}'=>$object->getAttributeLabel($attribute),
@@ -110,6 +131,7 @@ class CUrlValidator extends CValidator
 			$pattern=$this->pattern;
 
 		$js="
+$validateIDN
 if(!value.match($pattern)) {
 	messages.push(".CJSON::encode($message).");
 }
@@ -134,5 +156,31 @@ if($.trim(value)!='') {
 		}
 
 		return $js;
+	}
+
+	/**
+	 * Converts given IDN to the punycode.
+	 * @param $value IDN to be converted.
+	 * @return string resulting punycode.
+	 * @since 1.1.13
+	 */
+	private function encodeIDN($value)
+	{
+		require_once(Yii::getPathOfAlias('system.vendors.idna_convert').DIRECTORY_SEPARATOR.'idna_convert.class.php');
+		$idnaConvert=new idna_convert();
+		return $idnaConvert->encode($value);
+	}
+
+	/**
+	 * Converts given punycode to the IDN.
+	 * @param $value punycode to be converted.
+	 * @return string resulting IDN.
+	 * @since 1.1.13
+	 */
+	private function decodeIDN($value)
+	{
+		require_once(Yii::getPathOfAlias('system.vendors.idna_convert').DIRECTORY_SEPARATOR.'idna_convert.class.php');
+		$idnaConvert=new idna_convert();
+		return $idnaConvert->decode($value);
 	}
 }
