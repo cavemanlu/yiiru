@@ -249,6 +249,22 @@ class CGridView extends CBaseListView
 	 */
 	public $loadingCssClass='grid-view-loading';
 	/**
+	 * @var string the jQuery selector of filter input fields.
+	 * The token '{filter}' is recognized and it will be replaced with the grid filters selector.
+	 * Defaults to '{filter}'.
+	 *
+	 * Note: if this value is empty an exception will be thrown.
+	 *
+	 * Example (adding a custom selector to the default one):
+	 * <pre>
+	 *  ...
+	 *  'filterSelector'=>'{filter}, #myfilter',
+	 *  ...
+	 * </pre>
+	 * @since 1.1.13
+	 */
+	public $filterSelector='{filter}';
+	/**
 	 * @var string имя CSS-класса для элемента строки таблицы, содержащим все поля ввода фильтров. По умолчанию - 'filters'
 	 * @see filter
 	 * @since 1.1.1
@@ -303,6 +319,8 @@ class CGridView extends CBaseListView
 
 		if(empty($this->updateSelector))
 			throw new CException(Yii::t('zii','The property updateSelector should be defined.'));
+		if(empty($this->filterSelector))
+			throw new CException(Yii::t('zii','The property filterSelector should be defined.'));
 
 		if(!isset($this->htmlOptions['class']))
 			$this->htmlOptions['class']='grid-view';
@@ -400,7 +418,8 @@ class CGridView extends CBaseListView
 			'tableClass'=>$this->itemsCssClass,
 			'selectableRows'=>$this->selectableRows,
 			'enableHistory'=>$this->enableHistory,
-			'updateSelector'=>$this->updateSelector
+			'updateSelector'=>$this->updateSelector,
+			'filterSelector'=>$this->filterSelector
 		);
 		if($this->ajaxUrl!==null)
 			$options['url']=CHtml::normalizeUrl($this->ajaxUrl);

@@ -225,7 +225,7 @@ class CDbCommand extends CComponent
 			catch(Exception $e)
 			{
 				Yii::log('Error in preparing SQL: '.$this->getText(),CLogger::LEVEL_ERROR,'system.db.CDbCommand');
-                $errorInfo = $e instanceof PDOException ? $e->errorInfo : null;
+                $errorInfo=$e instanceof PDOException ? $e->errorInfo : null;
 				throw new CDbException(Yii::t('yii','CDbCommand failed to prepare the SQL statement: {error}',
 					array('{error}'=>$e->getMessage())),(int)$e->getCode(),$errorInfo);
 			}
@@ -361,16 +361,18 @@ class CDbCommand extends CComponent
 
 			return $n;
 		}
-		catch(Exception $e)
 		{
 			if($this->_connection->enableProfiling)
 				Yii::endProfile('system.db.CDbCommand.execute('.$this->getText().$par.')','system.db.CDbCommand.execute');
-            $errorInfo = $e instanceof PDOException ? $e->errorInfo : null;
-            $message = $e->getMessage();
+
+			$errorInfo=$e instanceof PDOException ? $e->errorInfo : null;
+			$message=$e->getMessage();
 			Yii::log(Yii::t('yii','CDbCommand::execute() failed: {error}. The SQL statement executed was: {sql}.',
 				array('{error}'=>$message, '{sql}'=>$this->getText().$par)),CLogger::LEVEL_ERROR,'system.db.CDbCommand');
-            if(YII_DEBUG)
-            	$message .= '. The SQL statement executed was: '.$this->getText().$par;
+
+			if(YII_DEBUG)
+				$message.='. The SQL statement executed was: '.$this->getText().$par;
+
 			throw new CDbException(Yii::t('yii','CDbCommand failed to execute the SQL statement: {error}',
 				array('{error}'=>$message)),(int)$e->getCode(),$errorInfo);
 		}
@@ -525,7 +527,7 @@ class CDbCommand extends CComponent
 			if(($result=$cache->get($cacheKey))!==false)
 			{
 				Yii::trace('Query result found in cache','system.db.CDbCommand');
-				return $result;
+				return $result[0];
 			}
 		}
 
@@ -554,7 +556,7 @@ class CDbCommand extends CComponent
 				Yii::endProfile('system.db.CDbCommand.query('.$this->getText().$par.')','system.db.CDbCommand.query');
 
 			if(isset($cache,$cacheKey))
-				$cache->set($cacheKey, $result, $this->_connection->queryCachingDuration, $this->_connection->queryCachingDependency);
+				$cache->set($cacheKey, array($result), $this->_connection->queryCachingDuration, $this->_connection->queryCachingDependency);
 
 			return $result;
 		}
@@ -562,12 +564,15 @@ class CDbCommand extends CComponent
 		{
 			if($this->_connection->enableProfiling)
 				Yii::endProfile('system.db.CDbCommand.query('.$this->getText().$par.')','system.db.CDbCommand.query');
-            $errorInfo = $e instanceof PDOException ? $e->errorInfo : null;
-            $message = $e->getMessage();
+
+			$errorInfo=$e instanceof PDOException ? $e->errorInfo : null;
+			$message=$e->getMessage();
 			Yii::log(Yii::t('yii','CDbCommand::{method}() failed: {error}. The SQL statement executed was: {sql}.',
 				array('{method}'=>$method, '{error}'=>$message, '{sql}'=>$this->getText().$par)),CLogger::LEVEL_ERROR,'system.db.CDbCommand');
-            if(YII_DEBUG)
-            	$message .= '. The SQL statement executed was: '.$this->getText().$par;
+
+			if(YII_DEBUG)
+				$message.='. The SQL statement executed was: '.$this->getText().$par;
+
 			throw new CDbException(Yii::t('yii','CDbCommand failed to execute the SQL statement: {error}',
 				array('{error}'=>$message)),(int)$e->getCode(),$errorInfo);
 		}
@@ -1654,5 +1659,30 @@ class CDbCommand extends CComponent
 		foreach($params as $name=>$value)
 			$this->params[$name]=$value;
 		return $this;
+	}
+
+	/**
+	 * Builds a SQL statement for creating a primary key constraint.
+	 * @param string $name the name of the primary key constraint to be created. The name will be properly quoted by the method.
+	 * @param string $table the table who will be inheriting the primary key. The name will be properly quoted by the method.
+	 * @param string $columns the column/s where the primary key will be effected. The name will be properly quoted by the method.
+	 * @return integer number of rows affected by the execution.
+	 * @since 1.1.13
+	 */
+	public function addPrimaryKey($name,$table,$columns)
+	{
+		return $this->setText($this->getConnection()->getSchema()->addPrimaryKey($name,$table,$columns))->execute();
+	}
+
+	/**
+	 * Builds a SQL statement for dropping a primary key constraint.
+	 * @param string $name the name of the primary key constraint to be dropped. The name will be properly quoted by the method.
+	 * @param string $table the table that owns the primary key. The name will be properly quoted by the method.
+	 * @return integer number of rows affected by the execution.
+	 * @since 1.1.13
+	 */
+	public function dropPrimaryKey($name,$table)
+	{
+		return $this->setText($this->getConnection()->getSchema()->dropPrimaryKey($name,$table))->execute();
 	}
 }

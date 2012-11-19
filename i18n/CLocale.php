@@ -227,13 +227,14 @@ class CLocale extends CComponent
 	}
 
 	/**
-	 * @param integer $day номер дня недели (0-6, 0 - воскресенье)
+	 * @param integer $day номер дня недели (0-7, 0 и 7 - воскресенье)
 	 * @param string $width вид названия дня недели. Модет принимать значения 'wide', 'abbreviated' или 'narrow'
 	 * @param boolean $standAlone возвращать ли название дня недели в формате stand-alone
 	 * @return string название дня недели
 	 */
 	public function getWeekDayName($day,$width='wide',$standAlone=false)
 	{
+		$day=$day%7;
 		if($standAlone)
 			return isset($this->_data['weekDayNamesSA'][$width][$day]) ? $this->_data['weekDayNamesSA'][$width][$day] : $this->_data['weekDayNames'][$width][$day];
 		else

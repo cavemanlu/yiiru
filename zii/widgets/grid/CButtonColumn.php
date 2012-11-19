@@ -244,11 +244,11 @@ function() {
 	$confirmation
 	var th=this;
 	var afterDelete=$this->afterDelete;
-	$.fn.yiiGridView.update('{$this->grid->id}', {
+	jQuery.fn.yiiGridView.update('{$this->grid->id}', {
 		type:'POST',
-		url:$(this).attr('href'),$csrf
+		url:jQuery(this).attr('href'),$csrf
 		success:function(data) {
-			$.fn.yiiGridView.update('{$this->grid->id}');
+			jQuery.fn.yiiGridView.update('{$this->grid->id}');
 			afterDelete(th,true,data);
 		},
 		error:function(XHR) {
