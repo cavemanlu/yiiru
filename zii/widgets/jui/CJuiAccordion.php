@@ -5,7 +5,7 @@
  * @author Sebastian Thierer <sebathi@gmail.com>
  * @author Qiang XUe <qiang.xue@gmail.com>
  * @link http://www.yiiframework.com/
- * @copyright Copyright &copy; 2008-2011 Yii Software LLC
+ * @copyright 2008-2013 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
 
@@ -14,7 +14,7 @@ Yii::import('zii.widgets.jui.CJuiWidget');
 /**
  * Виджет CJuiAccordion отображает блок-аккордеон (список раскрывающихся блоков).
  *
- * Виджет CJuiAccordion инкапсулирует {@link http://jqueryui.com/demos/accordion/ плагин JUI accordion}.
+ * Виджет CJuiAccordion инкапсулирует {@link http://jqueryui.com/accordion/ плагин JUI accordion}.
  *
  * Для использования данного виджета нужно вставить в представление следующий код:
  * <pre>
@@ -33,11 +33,13 @@ Yii::import('zii.widgets.jui.CJuiWidget');
  * </pre>
  *
  * Настройкой свойства {@link options} можно определить опции, передаваемые в плагин блока-аккордеона.
- * Обратитесь к {@link http://jqueryui.com/demos/accordion/ документации о плагине JUI accordion}
- * за списком возможных опций (пар имя-значение).
+ * Обратитесь к {@link http://api.jqueryui.com/accordion/ API плагина JUI accordion}
+ * за списком возможных опций (пар имя-значение) и к
+ * {@link http://jqueryui.com/accordion/ основной странице плагина} за
+ * описанием и примерами.
  *
  * @author Sebastian Thierer <sebathi@gmail.com>
- * @author Qiang XUe <qiang.xue@gmail.com>
+ * @author Qiang Xue <qiang.xue@gmail.com>
  * @package zii.widgets.jui
  * @since 1.1
  */
@@ -72,8 +74,8 @@ class CJuiAccordion extends CJuiWidget
 	public function run()
 	{
 		$id=$this->getId();
-		if (isset($this->htmlOptions['id']))
-			$id = $this->htmlOptions['id'];
+		if(isset($this->htmlOptions['id']))
+			$id=$this->htmlOptions['id'];
 		else
 			$this->htmlOptions['id']=$id;
 
@@ -85,7 +87,7 @@ class CJuiAccordion extends CJuiWidget
 		}
 		echo CHtml::closeTag($this->tagName);
 
-		$options=empty($this->options) ? '' : CJavaScript::encode($this->options);
+		$options=CJavaScript::encode($this->options);
 		Yii::app()->getClientScript()->registerScript(__CLASS__.'#'.$id,"jQuery('#{$id}').accordion($options);");
 	}
 }

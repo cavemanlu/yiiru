@@ -4,7 +4,7 @@
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.yiiframework.com/
- * @copyright Copyright &copy; 2008-2011 Yii Software LLC
+ * @copyright 2008-2013 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
 
@@ -28,7 +28,8 @@
  * распознаваемой всеми валидаторами (см. {@link CValidator}),
  * CCompareValidator позволяет определять следующую метку:
  * <ul>
- * <li>{compareValue}: заменяется постоянным значением, сравниваемым с {@link compareValue}.</li>
+ * <li>{compareValue}: заменяется постоянным значением, сравниваемым с ({@link compareValue}).</li>
+ * <li>{compareAttribute}: replaced with the label of the attribute beeing compared with ({@link compareAttribute}).</li>
  * </ul>
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
@@ -96,49 +97,33 @@ class CCompareValidator extends CValidator
 			case '=':
 			case '==':
 				if(($this->strict && $value!==$compareValue) || (!$this->strict && $value!=$compareValue))
-				{
 					$message=$this->message!==null?$this->message:Yii::t('yii','{attribute} must be repeated exactly.');
-					$this->addError($object,$attribute,$message,array('{compareAttribute}'=>$compareTo));
-				}
 				break;
 			case '!=':
 				if(($this->strict && $value===$compareValue) || (!$this->strict && $value==$compareValue))
-				{
 					$message=$this->message!==null?$this->message:Yii::t('yii','{attribute} must not be equal to "{compareValue}".');
-					$this->addError($object,$attribute,$message,array('{compareAttribute}'=>$compareTo,'{compareValue}'=>$compareValue));
-				}
 				break;
 			case '>':
 				if($value<=$compareValue)
-				{
 					$message=$this->message!==null?$this->message:Yii::t('yii','{attribute} must be greater than "{compareValue}".');
-					$this->addError($object,$attribute,$message,array('{compareAttribute}'=>$compareTo,'{compareValue}'=>$compareValue));
-				}
 				break;
 			case '>=':
 				if($value<$compareValue)
-				{
 					$message=$this->message!==null?$this->message:Yii::t('yii','{attribute} must be greater than or equal to "{compareValue}".');
-					$this->addError($object,$attribute,$message,array('{compareAttribute}'=>$compareTo,'{compareValue}'=>$compareValue));
-				}
 				break;
 			case '<':
 				if($value>=$compareValue)
-				{
 					$message=$this->message!==null?$this->message:Yii::t('yii','{attribute} must be less than "{compareValue}".');
-					$this->addError($object,$attribute,$message,array('{compareAttribute}'=>$compareTo,'{compareValue}'=>$compareValue));
-				}
 				break;
 			case '<=':
 				if($value>$compareValue)
-				{
 					$message=$this->message!==null?$this->message:Yii::t('yii','{attribute} must be less than or equal to "{compareValue}".');
-					$this->addError($object,$attribute,$message,array('{compareAttribute}'=>$compareTo,'{compareValue}'=>$compareValue));
-				}
 				break;
 			default:
 				throw new CException(Yii::t('yii','Invalid operator "{operator}".',array('{operator}'=>$this->operator)));
 		}
+		if(!empty($message))
+			$this->addError($object,$attribute,$message,array('{compareAttribute}'=>$compareTo,'{compareValue}'=>$compareValue));
 	}
 
 	/**
@@ -204,12 +189,12 @@ class CCompareValidator extends CValidator
 
 		$message=strtr($message,array(
 			'{attribute}'=>$object->getAttributeLabel($attribute),
-			'{compareValue}'=>$compareTo,
+			'{compareAttribute}'=>$compareTo,
 		));
 
 		return "
 if(".($this->allowEmpty ? "jQuery.trim(value)!='' && " : '').$condition.") {
-	messages.push(".CJSON::encode($message).");
+	messages.push(".CJSON::encode($message).".replace('{compareValue}', ".$compareValue."));
 }
 ";
 	}

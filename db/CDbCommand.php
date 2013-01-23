@@ -4,7 +4,7 @@
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.yiiframework.com/
- * @copyright Copyright &copy; 2008-2011 Yii Software LLC
+ * @copyright 2008-2013 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
 
@@ -327,7 +327,9 @@ class CDbCommand extends CComponent
 	 * их данным способом может увеличить производительность. Примечание: при
 	 * передаче параметров данным способом нельзя связать параметры или
 	 * значения с использованием методов {@link bindParam} или
-	 * {@link bindValue}, и наоборот
+	 * {@link bindValue}, и наоборот.
+	 * Please also note that all values are treated as strings in this case, if you need them to be handled as
+	 * their real data types, you have to use {@link bindParam} or {@link bindValue} instead.
 	 * @return integer количество строк, затронутых данным выполнением
 	 * SQL-выражения
 	 * @throws CException вызывается, если выполнение SQL-выражения неуспешно
@@ -387,7 +389,9 @@ class CDbCommand extends CComponent
 	 * их данным способом может увеличить производительность. Примечание: при
 	 * передаче параметров данным способом нельзя связать параметры или
 	 * значения с использованием методов {@link bindParam} или
-	 * {@link bindValue}, и наоборот
+	 * {@link bindValue}, и наоборот.
+	 * Please also note that all values are treated as strings in this case, if you need them to be handled as
+	 * their real data types, you have to use {@link bindParam} or {@link bindValue} instead.
 	 * @return CDbDataReader объект ридера (reader) для получения результата
 	 * запроса
 	 * @throws CException вызывается, если выполнение SQL-выражения неуспешно
@@ -408,7 +412,9 @@ class CDbCommand extends CComponent
 	 * их данным способом может увеличить производительность. Примечание: при
 	 * передаче параметров данным способом нельзя связать параметры или
 	 * значения с использованием методов {@link bindParam} или
-	 * {@link bindValue}, и наоборот
+	 * {@link bindValue}, и наоборот.
+	 * Please also note that all values are treated as strings in this case, if you need them to be handled as
+	 * their real data types, you have to use {@link bindParam} or {@link bindValue} instead.
 	 * @return array все строки результата запроса. Каждый элемент массива -
 	 * это массив, представляющий строку данных. Если результат запроса пустой,
 	 * то будет возвращен пустой массив
@@ -432,7 +438,9 @@ class CDbCommand extends CComponent
 	 * их данным способом может увеличить производительность. Примечание: при
 	 * передаче параметров данным способом нельзя связать параметры или
 	 * значения с использованием методов {@link bindParam} или
-	 * {@link bindValue}, и наоборот
+	 * {@link bindValue}, и наоборот.
+	 * Please also note that all values are treated as strings in this case, if you need them to be handled as
+	 * their real data types, you have to use {@link bindParam} or {@link bindValue} instead.
 	 * @return mixed первая строка (в виде массива) результата запроса; false,
 	 * если результат запроса пуст
 	 * @throws CException вызывается, если выполнение SQL-выражения неуспешно
@@ -453,7 +461,9 @@ class CDbCommand extends CComponent
 	 * их данным способом может увеличить производительность. Примечание: при
 	 * передаче параметров данным способом нельзя связать параметры или
 	 * значения с использованием методов {@link bindParam} или
-	 * {@link bindValue}, и наоборот
+	 * {@link bindValue}, и наоборот.
+	 * Please also note that all values are treated as strings in this case, if you need them to be handled as
+	 * their real data types, you have to use {@link bindParam} or {@link bindValue} instead.
 	 * @return mixed значение первого столбца первой строки результата запроса;
 	 * false, если значения нет
 	 * @throws CException вызывается, если выполнение SQL-выражения неуспешно
@@ -478,7 +488,9 @@ class CDbCommand extends CComponent
 	 * их данным способом может увеличить производительность. Примечание: при
 	 * передаче параметров данным способом нельзя связать параметры или
 	 * значения с использованием методов {@link bindParam} или
-	 * {@link bindValue}, и наоборот
+	 * {@link bindValue}, и наоборот.
+	 * Please also note that all values are treated as strings in this case, if you need them to be handled as
+	 * their real data types, you have to use {@link bindParam} or {@link bindValue} instead.
 	 * @return array первый столбец результата запроса. Если результат пустой,
 	 * то возвращается пустой массив
 	 * @throws CException вызывается, если выполнение SQL-выражения неуспешно
@@ -497,7 +509,9 @@ class CDbCommand extends CComponent
 	 * их данным способом может увеличить производительность. Примечание: при
 	 * передаче параметров данным способом нельзя связать параметры или
 	 * значения с использованием методов {@link bindParam} или
-	 * {@link bindValue}, и наоборот
+	 * {@link bindValue}, и наоборот.
+	 * Please also note that all values are treated as strings in this case, if you need them to be handled as
+	 * their real data types, you have to use {@link bindParam} or {@link bindValue} instead.
 	 * @return mixed результат выполнения метода
 	 */
 	private function queryInternal($method,$mode,$params=array())
@@ -609,6 +623,9 @@ class CDbCommand extends CComponent
 		if(!empty($query['having']))
 			$sql.="\nHAVING ".$query['having'];
 
+		if(!empty($query['union']))
+			$sql.="\nUNION (\n".(is_array($query['union']) ? implode("\n) UNION (\n",$query['union']) : $query['union']) . ')';
+
 		if(!empty($query['order']))
 			$sql.="\nORDER BY ".$query['order'];
 
@@ -616,9 +633,6 @@ class CDbCommand extends CComponent
 		$offset=isset($query['offset']) ? (int)$query['offset'] : -1;
 		if($limit>=0 || $offset>0)
 			$sql=$this->_connection->getCommandBuilder()->applyLimit($sql,$limit,$offset);
-
-		if(!empty($query['union']))
-			$sql.="\nUNION (\n".(is_array($query['union']) ? implode("\n) UNION (\n",$query['union']) : $query['union']) . ')';
 
 		return $sql;
 	}
@@ -1123,7 +1137,13 @@ class CDbCommand extends CComponent
 	 * сортировка. Столбцы могут быть определены в виде строки (например,
 	 * "id ASC, name DESC") либо в виде массива (например, array('id ASC',
 	 * 'name DESC')). Метод автоматически заключает в кавычки имена столбцов,
-	 * если столбец не содержит скобок (т.е., столбец не содержит выражение БД)
+	 * если столбец не содержит скобок (т.е., столбец содержит выражение БД)
+	 *
+	 * Например, для получения выражения "ORDER BY 1" необходимо записать:
+	 * <pre>
+	 * $criteria->order('(1)');
+	 * </pre>
+	 
 	 * @return CDbCommand объект данной команды
 	 * @since 1.1.6
 	 */

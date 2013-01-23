@@ -4,7 +4,7 @@
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.yiiframework.com/
- * @copyright Copyright &copy; 2008-2011 Yii Software LLC
+ * @copyright 2008-2013 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
 
@@ -110,7 +110,7 @@ abstract class CActiveRecord extends CModel
 	 * @param integer $duration время в секундах, в течение которого результат
 	 * запроса, хранящийся в кэше, считается валидным. Если равно 0, то
 	 * кэширование отключено
-	 * @param CCacheDependency $dependency зависимость, используемая при
+	 * @param CCacheDependency|ICacheDependency $dependency зависимость, используемая при
 	 * сохранении результата запроса в кэш
 	 * @param integer $queryCount количество SQL-запросов, которые должны быть
 	 * кэшированы после вызова данного метода. По умолчанию - 1, т.е., будет
@@ -1498,7 +1498,7 @@ abstract class CActiveRecord extends CModel
 	 * методу {@link find()}
 	 * @param mixed $condition условие запроса или критерий
 	 * @param array $params передаваемые в SQL-выражение параметры
-	 * @return array список записей, удовлетворяющих определенным условиям.
+	 * @return CActiveRecord[] список записей, удовлетворяющих определенным условиям.
 	 * Если записи не найдены, возвращается пустой массив
 	 */
 	public function findAll($condition='',$params=array())
@@ -1536,7 +1536,7 @@ abstract class CActiveRecord extends CModel
 	 * значение ключа должно быть массивом (имя столбца => значение столбца)
 	 * @param mixed $condition условие запроса или критерий
 	 * @param array $params передаваемые в SQL-выражение параметры
-	 * @return array список найденных записей. Если записи не найдены,
+	 * @return CActiveRecord[] список найденных записей. Если записи не найдены,
 	 * возвращается пустой массив
 	 */
 	public function findAllByPk($pk,$condition='',$params=array())
@@ -1577,7 +1577,7 @@ abstract class CActiveRecord extends CModel
 	 * условия IN
 	 * @param mixed $condition условие запроса или критерий
 	 * @param array $params передаваемые в SQL-выражение параметры
-	 * @return CActiveRecord найденная запись. Null, если запись не найдена
+	 * @return CActiveRecord[] найденная запись. Null, если запись не найдена
 	 */
 	public function findAllByAttributes($attributes,$condition='',$params=array())
 	{
@@ -1614,7 +1614,7 @@ abstract class CActiveRecord extends CModel
 	 * Находит все записи в БД по определенному SQL-выражению
 	 * @param string $sql SQL-выражение
 	 * @param array $params передаваемые в SQL-выражение параметры
-	 * @return array список найденных записей. Если записи не найдены,
+	 * @return CActiveRecord[] список найденных записей. Если записи не найдены,
 	 * возвращается пустой массив
 	 */
 	public function findAllBySql($sql,$params=array())
@@ -1952,7 +1952,7 @@ abstract class CActiveRecord extends CModel
 	 * использоваться в качестве индекса результирующего массива. Если задано
 	 * значение null, то массив будет индексирован целыми числами, начиная с
 	 * нуля
-	 * @return array список AR-объектов
+	 * @return CActiveRecord[] список AR-объектов
 	 */
 	public function populateRecords($data,$callAfterFind=true,$index=null)
 	{

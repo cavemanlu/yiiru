@@ -4,7 +4,7 @@
  *
  * @author Sebastian Thierer <sebathi@gmail.com>
  * @link http://www.yiiframework.com/
- * @copyright Copyright &copy; 2008-2011 Yii Software LLC
+ * @copyright 2008-2013 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
 
@@ -13,7 +13,7 @@ Yii::import('zii.widgets.jui.CJuiWidget');
 /**
  * Виджет CJuiDialog отображает диалоговое окно.
  *
- * Виджет CJuiDialog инкапсулирует {@link http://jqueryui.com/demos/dialog/ плагин JUI dialog}.
+ * Виджет CJuiDialog инкапсулирует {@link http://jqueryui.com/dialog/ плагин JUI dialog}.
  *
  * Для использования данного виджета нужно вставить в представление следующий код:
  * <pre>
@@ -37,8 +37,10 @@ Yii::import('zii.widgets.jui.CJuiWidget');
  * </pre>
  *
  * Настройкой свойства {@link options} можно определить опции, передаваемые в плагин диалогового окна.
- * Обратитесь к {@link http://jqueryui.com/demos/dialog/ документации о плагине JUI dialog}
- * за списком возможных опций (пар имя-значение).
+ * Обратитесь к {@link http://api.jqueryui.com/dialog/ API плагина JUI dialog}
+ * за списком возможных опций (пар имя-значение) и к
+ * {@link http://jqueryui.com/dialog/ основной странице плагина} за
+ * описанием и примерами.
  *
  * @author Sebastian Thierer <sebathi@gmail.com>
  * @package zii.widgets.jui
@@ -60,16 +62,17 @@ class CJuiDialog extends CJuiWidget
 		parent::init();
 
 		$id=$this->getId();
-		if (isset($this->htmlOptions['id']))
-			$id = $this->htmlOptions['id'];
+		if(isset($this->htmlOptions['id']))
+			$id=$this->htmlOptions['id'];
 		else
 			$this->htmlOptions['id']=$id;
 
-		$options=empty($this->options) ? '' : CJavaScript::encode($this->options);
+		$options=CJavaScript::encode($this->options);
 		Yii::app()->getClientScript()->registerScript(__CLASS__.'#'.$id,"jQuery('#{$id}').dialog($options);");
+
 		echo CHtml::openTag($this->tagName,$this->htmlOptions)."\n";
 	}
-
+	
 	/**
 	 * Генерирует закрывающий тег виджета диалогового окна
 	 */

@@ -4,7 +4,7 @@
  *
  * @author Sebastian Thierer <sebathi@gmail.com>
  * @link http://www.yiiframework.com/
- * @copyright Copyright &copy; 2008-2011 Yii Software LLC
+ * @copyright 2008-2013 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
 
@@ -13,7 +13,7 @@ Yii::import('zii.widgets.jui.CJuiWidget');
 /**
  * Виджет CJuiDraggable отображает перетаскиваемый элемент.
  *
- * Виджет CJuiDraggable инкапсулирует {@link http://jqueryui.com/demos/draggable/ плагин JUI draggable}.
+ * Виджет CJuiDraggable инкапсулирует {@link http://jqueryui.com/draggable/ плагин JUI draggable}.
  *
  * Для использования данного виджета нужно вставить в представление следующий код:
  * <pre>
@@ -30,8 +30,10 @@ Yii::import('zii.widgets.jui.CJuiWidget');
  * </pre>
  *
  * Настройкой свойства {@link options} можно определить опции, передаваемые в плагин перетаскиваемого элемента.
- * Обратитесь к {@link http://jqueryui.com/demos/draggable/ документации о плагине JUI draggable}
- * за списком возможных опций (пар имя-значение).
+ * Обратитесь к {@link http://api.jqueryui.com/draggable/ API плагина JUI draggable}
+ * за списком возможных опций (пар имя-значение) и к
+ * {@link http://jqueryui.com/draggable/ основной странице плагина} за
+ * описанием и примерами.
  *
  * @author Sebastian Thierer <sebathi@gmail.com>
  * @package zii.widgets.jui
@@ -48,28 +50,27 @@ class CJuiDraggable extends CJuiWidget
 	 * Генерирует открывающий тег перетаскиваемого элемента.
 	 * Метод также регистрирует требуемый javascript-код
 	 */
-	public function init(){
+	public function init()
+	{
 		parent::init();
-		
+
 		$id=$this->getId();
-		if (isset($this->htmlOptions['id']))
-			$id = $this->htmlOptions['id'];
+		if(isset($this->htmlOptions['id']))
+			$id=$this->htmlOptions['id'];
 		else
 			$this->htmlOptions['id']=$id;
-		
-		$options=empty($this->options) ? '' : CJavaScript::encode($this->options);
+
+		$options=CJavaScript::encode($this->options);
 		Yii::app()->getClientScript()->registerScript(__CLASS__.'#'.$id,"jQuery('#{$id}').draggable($options);");
 
 		echo CHtml::openTag($this->tagName,$this->htmlOptions)."\n";
 	}
-
+	
 	/**
 	 * Генерирует закрывающий тег перетаскиваемого элемента
 	 */
-	public function run(){
+	public function run()
+	{
 		echo CHtml::closeTag($this->tagName);
 	}
-	
 }
-
-

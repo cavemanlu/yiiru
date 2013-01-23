@@ -4,7 +4,7 @@
  *
  * @author Sebastian Thierer <sebas@artfos.com>
  * @link http://www.yiiframework.com/
- * @copyright Copyright &copy; 2008-2011 Yii Software LLC
+ * @copyright 2008-2013 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
 
@@ -13,7 +13,7 @@ Yii::import('zii.widgets.jui.CJuiInputWidget');
 /**
  * Виджет CJuiButton отображает управляющие элементы формы в виде кнопки.
  *
- * Виджет CJuiButton инкапсулирует {@link http://jqueryui.com/demos/button/ плагин JUI button}.
+ * Виджет CJuiButton инкапсулирует {@link http://jqueryui.com/button/ плагин JUI button}.
  *
  * Для использования данного виджета в качестве submit-кнопки нужно вставить в представление следующий код:
  * <pre>
@@ -39,8 +39,10 @@ Yii::import('zii.widgets.jui.CJuiInputWidget');
  * </pre>
  *
  * Настройкой свойства {@link options} можно определить опции, передаваемые в плагин кнопки.
- * Обратитесь к {@link http://jqueryui.com/demos/button/ документации о плагине JUI button}
- * за списком возможных опций (пар имя-значение).
+ * Обратитесь к {@link http://api.jqueryui.com/button/ API плагина JUI button}
+ * за списком возможных опций (пар имя-значение) и к
+ * {@link http://jqueryui.com/button/ основной странице плагина} за
+ * описанием и примерами.
  *
  * @author Sebastian Thierer <sebathi@gmail.com>
  * @package zii.widgets.jui
@@ -85,22 +87,16 @@ class CJuiButton extends CJuiInputWidget
 	 * (non-PHPdoc)
 	 * @see framework/zii/widgets/jui/CJuiWidget::init()
 	 */
-	public function init(){
+	public function init()
+	{
 		parent::init();
-		if ($this->buttonType=='buttonset')
+
+		if($this->buttonType=='buttonset')
 		{
-			list($name,$id)=$this->resolveNameID();
+			if(!isset($this->htmlOptions['id']))
+				$this->htmlOptions['id']=$this->getId();
 
-			if(isset($this->htmlOptions['id']))
-				$id=$this->htmlOptions['id'];
-			else
-				$this->htmlOptions['id']=$id;
-			if(isset($this->htmlOptions['name']))
-				$name=$this->htmlOptions['name'];
-			else
-				$this->htmlOptions['name']=$name;
-
-			echo CHtml::openTag($this->htmlTag, $this->htmlOptions);
+			echo CHtml::openTag($this->htmlTag,$this->htmlOptions);
 		}
 	}
 
@@ -110,7 +106,7 @@ class CJuiButton extends CJuiInputWidget
 	 */
 	public function run()
 	{
-		$cs = Yii::app()->getClientScript();
+		$cs=Yii::app()->getClientScript();
 		list($name,$id)=$this->resolveNameID();
 
 		if(isset($this->htmlOptions['id']))
@@ -122,7 +118,7 @@ class CJuiButton extends CJuiInputWidget
 		else
 			$this->htmlOptions['name']=$name;
 
-		if ($this->buttonType=='buttonset')
+		if($this->buttonType=='buttonset')
 		{
 			echo CHtml::closeTag($this->htmlTag);
 			$cs->registerScript(__CLASS__.'#'.$id,"jQuery('#{$id}').buttonset();");
@@ -132,54 +128,52 @@ class CJuiButton extends CJuiInputWidget
 			switch($this->buttonType)
 			{
 				case 'submit':
-					echo CHtml::submitButton($this->caption, $this->htmlOptions) . "\n";
+					echo CHtml::submitButton($this->caption,$this->htmlOptions)."\n";
 					break;
 				case 'button':
-					echo CHtml::htmlButton($this->caption, $this->htmlOptions) . "\n";
+					echo CHtml::htmlButton($this->caption,$this->htmlOptions)."\n";
 					break;
 				case 'link':
-					echo CHtml::link($this->caption, $this->url, $this->htmlOptions) . "\n";
+					echo CHtml::link($this->caption,$this->url,$this->htmlOptions)."\n";
 					break;
 				case 'radio':
-					if ($this->hasModel())
+					if($this->hasModel())
 					{
-						echo CHtml::activeRadioButton($this->model, $this->attribute, $this->htmlOptions);
-						echo CHtml::label($this->caption, CHtml::activeId($this->model, $this->attribute)) . "\n";
+						echo CHtml::activeRadioButton($this->model,$this->attribute,$this->htmlOptions);
+						echo CHtml::label($this->caption,CHtml::activeId($this->model,$this->attribute))."\n";
 					}
 					else
 					{
-						echo CHtml::radioButton($name, $this->value, $this->htmlOptions);
-						echo CHtml::label($this->caption, $id) . "\n";
+						echo CHtml::radioButton($name,$this->value,$this->htmlOptions);
+						echo CHtml::label($this->caption,$id)."\n";
 					}
 					break;
 				case 'checkbox':
-					if ($this->hasModel())
+					if($this->hasModel())
 					{
-						echo CHtml::activeCheckbox($this->model, $this->attribute, $this->htmlOptions);
-						echo CHtml::label($this->caption, CHtml::activeId($this->model, $this->attribute)) . "\n";
+						echo CHtml::activeCheckbox($this->model,$this->attribute,$this->htmlOptions);
+						echo CHtml::label($this->caption,CHtml::activeId($this->model,$this->attribute))."\n";
 					}
 					else
 					{
-						echo CHtml::checkbox($name, $this->value, $this->htmlOptions);
-						echo CHtml::label($this->caption, $id) . "\n";
+						echo CHtml::checkbox($name,$this->value,$this->htmlOptions);
+						echo CHtml::label($this->caption,$id)."\n";
 					}
 					break;
 				default:
 					throw new CException(Yii::t('zii','The button type "{type}" is not supported.',array('{type}'=>$this->buttonType)));
 			}
 
-			$options=empty($this->options) ? '' : CJavaScript::encode($this->options);
+			$options=CJavaScript::encode($this->options);
 			if($this->onclick!==null)
 			{
 				if(!($this->onclick instanceof CJavaScriptExpression))
 					$this->onclick=new CJavaScriptExpression($this->onclick);
-				$click = CJavaScript::encode($this->onclick);
+				$click=CJavaScript::encode($this->onclick);
 				$cs->registerScript(__CLASS__.'#'.$id,"jQuery('#{$id}').button($options).click($click);");
 			}
 			else
-			{
 				$cs->registerScript(__CLASS__.'#'.$id,"jQuery('#{$id}').button($options);");
-			}
 		}
 	}
 }

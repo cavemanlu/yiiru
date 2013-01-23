@@ -4,7 +4,7 @@
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.yiiframework.com/
- * @copyright Copyright &copy; 2008-2011 Yii Software LLC
+ * @copyright 2008-2013 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
 
@@ -404,13 +404,14 @@ abstract class CCodeModel extends CFormModel
 	public function pluralize($name)
 	{
 		$rules=array(
-			'/move$/i' => 'moves',
-			'/foot$/i' => 'feet',
-			'/child$/i' => 'children',
-			'/human$/i' => 'humans',
-			'/man$/i' => 'men',
-			'/tooth$/i' => 'teeth',
-			'/person$/i' => 'people',
+			'/(m)ove$/i' => '\1oves',
+			'/(f)oot$/i' => '\1eet',
+			'/(c)hild$/i' => '\1hildren',
+			'/(h)uman$/i' => '\1umans',
+			'/(m)an$/i' => '\1en',
+			'/(s)taff$/i' => '\1taff',
+			'/(t)ooth$/i' => '\1eeth',
+			'/(p)erson$/i' => '\1eople',
 			'/([m|l])ouse$/i' => '\1ice',
 			'/(x|ch|ss|sh|us|as|is|os)$/i' => '\1es',
 			'/([^aeiouy]|qu)y$/i' => '\1ies',

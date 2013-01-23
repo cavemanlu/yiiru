@@ -4,7 +4,7 @@
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.yiiframework.com/
- * @copyright Copyright &copy; 2008-2011 Yii Software LLC
+ * @copyright 2008-2013 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
 
@@ -86,7 +86,7 @@ class CCheckBoxColumn extends CGridColumn
 	 * <li>null - свойство {@link CGridView::selectableRows} используется для контроля количества возможных флажков для выбора.
 	 * Установка флажка также выделяет строку.</li>
 	 * </ul>
-	 * Вы также можете вызвать JavaScript-функцию <code>$.fn.yiiGridView.getChecked(containerID,columnID)</code>
+	 * Вы также можете вызвать JavaScript-функцию <code>$(gridID).yiiGridView.('getChecked', columnID)</code>
 	 * для получения значений выбранных строк
 	 * @since 1.1.6
 	 */

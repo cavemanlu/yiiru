@@ -4,7 +4,7 @@
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.yiiframework.com/
- * @copyright Copyright &copy; 2008-2011 Yii Software LLC
+ * @copyright 2008-2013 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
 
@@ -469,12 +469,15 @@ class CDbCriteria extends CComponent
 	 * Также, критерий, переданный в метод в качестве параметра, имеет преимущество в случае, когда
 	 * пара опций не может быть слита (например, LIMIT, OFFSET)
 	 * @param mixed $criteria критерий, с котором производится слияние. Может быть массивом или объектом класса CDbCriteria
-	 * @param boolean $useAnd использовать ли оператор 'AND' для слияния условий и их опций. Если значение
-	 * равно false, то будет использоваться оператор 'OR'. По умолчанию - true
+	 * @param string|boolean $operator the operator used to concatenate where and having conditions. Defaults to 'AND'.
+	 * For backwards compatibility a boolean value can be passed:
+	 * - 'false' for 'OR'
+	 * - 'true' for 'AND'
 	 */
-	public function mergeWith($criteria,$useAnd=true)
+	public function mergeWith($criteria,$operator='AND')
 	{
-		$and=$useAnd ? 'AND' : 'OR';
+		if(is_bool($operator))
+			$operator=$operator ? 'AND' : 'OR';
 		if(is_array($criteria))
 			$criteria=new self($criteria);
 		if($this->select!==$criteria->select)
@@ -494,7 +497,7 @@ class CDbCriteria extends CComponent
 			if($this->condition==='')
 				$this->condition=$criteria->condition;
 			elseif($criteria->condition!=='')
-				$this->condition="({$this->condition}) $and ({$criteria->condition})";
+				$this->condition="({$this->condition}) $operator ({$criteria->condition})";
 		}
 
 		if($this->params!==$criteria->params)
@@ -538,7 +541,7 @@ class CDbCriteria extends CComponent
 			if($this->having==='')
 				$this->having=$criteria->having;
 			elseif($criteria->having!=='')
-				$this->having="({$this->having}) $and ({$criteria->having})";
+				$this->having="({$this->having}) $operator ({$criteria->having})";
 		}
 
 		if($criteria->distinct>0)
@@ -600,7 +603,7 @@ class CDbCriteria extends CComponent
 						unset($v[$opt]);
 					}
 					$this->with[$k]=new self($this->with[$k]);
-					$this->with[$k]->mergeWith($v,$useAnd);
+					$this->with[$k]->mergeWith($v,$operator);
 					$this->with[$k]=$this->with[$k]->toArray();
 					if (count($excludes)!==0)
 						$this->with[$k]=CMap::mergeArray($this->with[$k],$excludes);

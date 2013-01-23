@@ -4,7 +4,7 @@
  *
  * @author Sebastian Thierer <sebathi@gmail.com>
  * @link http://www.yiiframework.com/
- * @copyright Copyright &copy; 2008-2011 Yii Software LLC
+ * @copyright 2008-2013 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
 
@@ -13,7 +13,7 @@ Yii::import('zii.widgets.jui.CJuiInputWidget');
 /**
  * Виджет CJuiSliderInput отображает слайдер. Может использоваться в формах It can be used in forms and post its value.
  *
- * Виджет CJuiSlider инкапсулирует плагин {@link http://jqueryui.com/demos/slider/ JUI slider}.
+ * Виджет CJuiSlider инкапсулирует плагин {@link http://jqueryui.com/slider/ JUI slider}.
  *
  * Для использования данного виджета нужно вставить в представление следующий код:
  * <pre>
@@ -52,8 +52,10 @@ Yii::import('zii.widgets.jui.CJuiInputWidget');
  * Если требуется использовать событие слайдера, измените значение свойства события на 'stop' или 'change'.
  *
  * Настройкой свойства {@link options} можно определить опции, передаваемые в плагин слайдера.
- * Обратитесь к {@link http://jqueryui.com/demos/slider/ документации о плагине JUI slider}
- * за списком возможных опций (пар имя-значение).
+ * Обратитесь к {@link http://api.jqueryui.com/slider/ API плагина JUI slider}
+ * за списком возможных опций (пар имя-значение) и к
+ * {@link http://jqueryui.com/slider/ основной странице плагина} за
+ * описанием и примерами.
  *
  * @author Sebastian Thierer <sebathi@gmail.com>
  * @package zii.widgets.jui
@@ -90,8 +92,6 @@ class CJuiSliderInput extends CJuiInputWidget
 	{
 		list($name,$id)=$this->resolveNameID();
 
-		$isRange=isset($this->options['range']) && $this->options['range'];
-
 		if(isset($this->htmlOptions['id']))
 			$id=$this->htmlOptions['id'];
 		else
@@ -99,10 +99,12 @@ class CJuiSliderInput extends CJuiInputWidget
 		if(isset($this->htmlOptions['name']))
 			$name=$this->htmlOptions['name'];
 
+		$isRange=isset($this->options['range']) && $this->options['range'];
+
 		if($this->hasModel())
 		{
 			$attribute=$this->attribute;
-			if ($isRange)
+			if($isRange)
 			{
 				$options=$this->htmlOptions;
 				echo CHtml::activeHiddenField($this->model,$this->attribute,$options);
@@ -124,19 +126,15 @@ class CJuiSliderInput extends CJuiInputWidget
 				$this->options['value']=$this->value;
 		}
 
-
-		$idHidden = $this->htmlOptions['id'];
+		$idHidden=$this->htmlOptions['id'];
 		$this->htmlOptions['id']=$idHidden.'_slider';
 		echo CHtml::tag($this->tagName,$this->htmlOptions,'');
 
-		$this->options[$this->event]= $isRange ?
-			new CJavaScriptExpression("function(e,ui){ v=ui.values; jQuery('#{$idHidden}').val(v[0]); jQuery('#{$idHidden}_end').val(v[1]); }"):
-			new CJavaScriptExpression('function(event, ui) { jQuery(\'#'. $idHidden .'\').val(ui.value); }');
+		$this->options[$this->event]= $isRange
+			? new CJavaScriptExpression("function(e,ui){ v=ui.values; jQuery('#{$idHidden}').val(v[0]); jQuery('#{$idHidden}_end').val(v[1]); }")
+			: new CJavaScriptExpression("function(event, ui) { jQuery(#'{$idHidden}').val(ui.value); }");
 
-		$options=empty($this->options) ? '' : CJavaScript::encode($this->options);
-
-		$js = "jQuery('#{$id}_slider').slider($options);\n";
-		Yii::app()->getClientScript()->registerScript(__CLASS__.'#'.$id, $js);
+		$options=CJavaScript::encode($this->options);
+		Yii::app()->getClientScript()->registerScript(__CLASS__.'#'.$id,"jQuery('#{$id}_slider').slider($options);");
 	}
-
 }

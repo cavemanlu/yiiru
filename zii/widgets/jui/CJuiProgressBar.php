@@ -4,7 +4,7 @@
  *
  * @author Sebastian Thierer <sebathi@gmail.com>
  * @link http://www.yiiframework.com/
- * @copyright Copyright &copy; 2008-2011 Yii Software LLC
+ * @copyright 2008-2013 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
 
@@ -13,7 +13,7 @@ Yii::import('zii.widgets.jui.CJuiWidget');
 /**
  * Виждет CJuiProgressBar отображает полосу прогресса (прогресс-бар).
  *
- * Виджет CJuiProgressBar инкапсулирует {@link http://jqueryui.com/demos/progressbar/ плагин JUI
+ * Виджет CJuiProgressBar инкапсулирует {@link http://jqueryui.com/progressbar/ плагин JUI
  * Progressbar}.
  *
  * Для использования данного виджета нужно вставить в представление следующий код:
@@ -31,8 +31,10 @@ Yii::import('zii.widgets.jui.CJuiWidget');
  * </pre>
  *
  * Настройкой свойства {@link options} можно определить опции, передаваемые в плагин прогресс-бара.
- * Обратитесь к {@link http://jqueryui.com/demos/progressbar/ документации о плагине JUI progressbar}
- * за списком возможных опций (пар имя-значение).
+ * Обратитесь к {@link http://api.jqueryui.com/progressbar/ API плагина JUI progressbar}
+ * за списком возможных опций (пар имя-значение) и к
+ * {@link http://jqueryui.com/progressbar/ основной странице плагина} за
+ * описанием и примерами.
  *
  * @author Sebastian Thierer <sebathi@gmail.com>
  * @package zii.widgets.jui
@@ -68,5 +70,4 @@ class CJuiProgressBar extends CJuiWidget
 		$options=CJavaScript::encode($this->options);
 		Yii::app()->getClientScript()->registerScript(__CLASS__.'#'.$id,"jQuery('#{$id}').progressbar($options);");
 	}
-
 }

@@ -4,7 +4,7 @@
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.yiiframework.com/
- * @copyright Copyright &copy; 2008-2011 Yii Software LLC
+ * @copyright 2008-2013 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
 
@@ -13,7 +13,7 @@ Yii::import('zii.widgets.jui.CJuiWidget');
 /**
  * Виджет CJuiSlider отображает слайдер.
  *
- * Виджет CJuiSlider инкапсулирует плагин {@link http://jqueryui.com/demos/slider/ JUI slider}.
+ * Виджет CJuiSlider инкапсулирует плагин {@link http://jqueryui.com/slider/ JUI slider}.
  *
  * Для использования данного виджета нужно вставить в представление следующий код:
  * <pre>
@@ -31,8 +31,10 @@ Yii::import('zii.widgets.jui.CJuiWidget');
  * </pre>
  *
  * Настройкой свойства {@link options} можно определить опции, передаваемые в плагин слайдера.
- * Обратитесь к {@link http://jqueryui.com/demos/slider/ документации о плагине JUI slider}
- * за списком возможных опций (пар имя-значение).
+ * Обратитесь к {@link http://api.jqueryui.com/slider/ API плагина JUI slider}
+ * за списком возможных опций (пар имя-значение) и к
+ * {@link http://jqueryui.com/slider/ основной странице плагина} за
+ * описанием и примерами.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @package zii.widgets.jui
@@ -56,18 +58,17 @@ class CJuiSlider extends CJuiWidget
 	public function run()
 	{
 		$id=$this->getId();
-		if (isset($this->htmlOptions['id']))
-			$id = $this->htmlOptions['id'];
+		if(isset($this->htmlOptions['id']))
+			$id=$this->htmlOptions['id'];
 		else
 			$this->htmlOptions['id']=$id;
 
-		echo CHtml::openTag($this->tagName,$this->htmlOptions);
-		echo CHtml::closeTag($this->tagName);
+		echo CHtml::tag($this->tagName,$this->htmlOptions,'');
 
 		if($this->value!==null)
 			$this->options['value']=$this->value;
 
-		$options=empty($this->options) ? '' : CJavaScript::encode($this->options);
+		$options=CJavaScript::encode($this->options);
 		Yii::app()->getClientScript()->registerScript(__CLASS__.'#'.$id,"jQuery('#{$id}').slider($options);");
 	}
 }

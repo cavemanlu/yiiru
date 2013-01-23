@@ -4,7 +4,7 @@
  *
  * @author Sebastian Thierer <sebathi@gmail.com>
  * @link http://www.yiiframework.com/
- * @copyright Copyright &copy; 2008-2011 Yii Software LLC
+ * @copyright 2008-2013 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
 
@@ -13,7 +13,7 @@ Yii::import('zii.widgets.jui.CJuiInputWidget');
 /**
  * Виджет CJuiAutoComplete отображает поле с автозаполнением.
  *
- * Виджет CJuiAutoComplete инкапсулирует {@link http://jqueryui.com/demos/autocomplete/ плагин JUI autocomplete}.
+ * Виджет CJuiAutoComplete инкапсулирует {@link http://jqueryui.com/autocomplete/ плагин JUI autocomplete}.
  *
  * Для использования данного виджета нужно вставить в представление следующий код:
  * <pre>
@@ -31,8 +31,10 @@ Yii::import('zii.widgets.jui.CJuiInputWidget');
  * </pre>
  *
  * Настройкой свойства {@link options} можно определить опции, передаваемые в плагин поля с автозаполнением.
- * Обратитесь к {@link http://jqueryui.com/demos/autocomplete/ документации о плагине JUI autocomplete}
- * за списком возможных опций (пар имя-значение).
+ * Обратитесь к {@link http://api.jqueryui.com/autocomplete/ API плагина JUI autocomplete}
+ * за списком возможных опций (пар имя-значение) и к
+ * {@link http://jqueryui.com/autocomplete/ основной странице плагина} за
+ * описанием и примерами.
  *
  * Настройкой свойства {@link source} можно определить, где искать опции автозаполнения для каждого
  * элемента. Если это массив, то он используется в качестве списка значений, используемых для
@@ -76,7 +78,6 @@ class CJuiAutoComplete extends CJuiInputWidget
 			$id=$this->htmlOptions['id'];
 		else
 			$this->htmlOptions['id']=$id;
-
 		if(isset($this->htmlOptions['name']))
 			$name=$this->htmlOptions['name'];
 
@@ -91,10 +92,6 @@ class CJuiAutoComplete extends CJuiInputWidget
 			$this->options['source']=$this->source;
 
 		$options=CJavaScript::encode($this->options);
-
-		$js = "jQuery('#{$id}').autocomplete($options);";
-
-		$cs = Yii::app()->getClientScript();
-		$cs->registerScript(__CLASS__.'#'.$id, $js);
+		Yii::app()->getClientScript()->registerScript(__CLASS__.'#'.$id,"jQuery('#{$id}').autocomplete($options);");
 	}
 }

@@ -4,7 +4,7 @@
  *
  * @author Sebastian Thierer <sebathi@gmail.com>
  * @link http://www.yiiframework.com/
- * @copyright Copyright &copy; 2008-2011 Yii Software LLC
+ * @copyright 2008-2013 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
 
@@ -13,7 +13,7 @@ Yii::import('zii.widgets.jui.CJuiWidget');
 /**
  * Виджет CJuiSelectable отображает список выделяемых элементов.
  *
- * Виджет CJuiSelectable инкапсулирует {@link http://jqueryui.com/demos/selectable/ плагин JUI selectable}.
+ * Виджет CJuiSelectable инкапсулирует {@link http://jqueryui.com/selectable/ плагин JUI selectable}.
  *
  * Для использования данного виджета нужно вставить в представление следующий код:
  * <pre>
@@ -31,8 +31,10 @@ Yii::import('zii.widgets.jui.CJuiWidget');
  * </pre>
  *
  * Настройкой свойства {@link options} можно определить опции, передаваемые в плагин выделяемых элементов.
- * Обратитесь к {@link http://jqueryui.com/demos/selectable/ документации о плагине JUI selectable}
- * за списком возможных опций (пар имя-значение).
+ * Обратитесь к {@link http://api.jqueryui.com/selectable/ API плагина JUI selectable}
+ * за списком возможных опций (пар имя-значение) и к
+ * {@link http://jqueryui.com/selectable/ основной странице плагина} за
+ * описанием и примерами.
  *
  * @author Sebastian Thierer <sebathi@gmail.com>
  * @package zii.widgets.jui
@@ -59,23 +61,20 @@ class CJuiSelectable extends CJuiWidget {
 	 * Выполняет виджет.
 	 * Метод регистрирует требуемый javascript-код и генерирует HTML-код
 	 */
-	public function run(){
+	public function run()
+	{
 		$id=$this->getId();
-		if (isset($this->htmlOptions['id']))
-			$id = $this->htmlOptions['id'];
+		if(isset($this->htmlOptions['id']))
+			$id=$this->htmlOptions['id'];
 		else
 			$this->htmlOptions['id']=$id;
 
-		$options=empty($this->options) ? '' : CJavaScript::encode($this->options);
+		$options=CJavaScript::encode($this->options);
 		Yii::app()->getClientScript()->registerScript(__CLASS__.'#'.$id,"jQuery('#{$id}').selectable({$options});");
 
 		echo CHtml::openTag($this->tagName,$this->htmlOptions)."\n";
 		foreach($this->items as $id=>$content)
-		{
 			echo strtr($this->itemTemplate,array('{id}'=>$id,'{content}'=>$content))."\n";
-		}
 		echo CHtml::closeTag($this->tagName);
 	}
 }
-
-

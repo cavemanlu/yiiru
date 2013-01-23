@@ -4,7 +4,7 @@
  *
  * @author Sebastian Thierer <sebathi@gmail.com>
  * @link http://www.yiiframework.com/
- * @copyright Copyright &copy; 2008-2011 Yii Software LLC
+ * @copyright 2008-2013 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
 
@@ -13,7 +13,7 @@ Yii::import('zii.widgets.jui.CJuiInputWidget');
 /**
  * Виджет CJuiDatePicker отображает элемент выбора даты.
  *
- * Виджет CJuiDatePicker инкапсулирует {@link http://jqueryui.com/demos/datepicker/ плагин JUI datepicker}.
+ * Виджет CJuiDatePicker инкапсулирует {@link http://jqueryui.com/datepicker/ плагин JUI datepicker}.
  *
  * Для использования данного виджета нужно вставить в представление следующий код:
  * <pre>
@@ -30,8 +30,10 @@ Yii::import('zii.widgets.jui.CJuiInputWidget');
  * </pre>
  *
  * Настройкой свойства {@link options} можно определить опции, передаваемые в плагин элемента выбора даты.
- * Обратитесь к {@link http://jqueryui.com/demos/datepicker/ документации о плагине JUI datepicker}
- * за списком возможных опций (пар имя-значение).
+ * Обратитесь к {@link http://api.jqueryui.com/datepicker/ API плагина JUI datepicker}
+ * за списком возможных опций (пар имя-значение) и к
+ * {@link http://jqueryui.com/datepicker/ основной странице плагина} за
+ * описанием и примерами.
  *
  * @author Sebastian Thierer <sebathi@gmail.com>
  * @package zii.widgets.jui
@@ -46,32 +48,27 @@ class CJuiDatePicker extends CJuiInputWidget
 	 * {@link language} в значение '' (пустая строка)
 	 */
 	public $language;
-
 	/**
 	 * @var string файл скрипта интернационализации Jquery UI. Использует свойство scriptUrl в качестве базового url-адреса
 	 */
 	public $i18nScriptFile = 'jquery-ui-i18n.min.js';
-
 	/**
 	 * @var array опции по умолчанию, вызываемые один раз за запрос. Данные опции будут затрагивать каждый экземпляр
 	 * виджета CJuiDatePicker на странице. Они должны быть установлены при первом вызове виджета за запрос
 	 */
 	public $defaultOptions;
-
 	/**
 	 * @var boolean если значение равно true, то виджет показывается в виде календаря на странице (в отличие от появлении
-	 * календаря при клике на текстовом поле), а поле ввода даты - в виде скрытого поля. Использует событие
-	 * onSelect для обновления скрытого поля
+	 * календаря при клике на текстовом поле), а поле ввода даты - в виде скрытого поля
 	 */
 	public $flat = false;
-
+	
 	/**
 	 * Выполняет виджет.
 	 * Метод регистрирует требуемый javascript-код и генерирует HTML-код
 	 */
 	public function run()
 	{
-
 		list($name,$id)=$this->resolveNameID();
 
 		if(isset($this->htmlOptions['id']))
@@ -81,7 +78,7 @@ class CJuiDatePicker extends CJuiInputWidget
 		if(isset($this->htmlOptions['name']))
 			$name=$this->htmlOptions['name'];
 
-		if ($this->flat===false)
+		if($this->flat===false)
 		{
 			if($this->hasModel())
 				echo CHtml::activeTextField($this->model,$this->attribute,$this->htmlOptions);
@@ -93,41 +90,39 @@ class CJuiDatePicker extends CJuiInputWidget
 			if($this->hasModel())
 			{
 				echo CHtml::activeHiddenField($this->model,$this->attribute,$this->htmlOptions);
-				$attribute = $this->attribute;
-				$this->options['defaultDate'] = $this->model->$attribute;
+				$attribute=$this->attribute;
+				$this->options['defaultDate']=$this->model->$attribute;
 			}
 			else
 			{
 				echo CHtml::hiddenField($name,$this->value,$this->htmlOptions);
-				$this->options['defaultDate'] = $this->value;
+				$this->options['defaultDate']=$this->value;
 			}
 
-			if (!isset($this->options['onSelect']))
-				$this->options['onSelect']=new CJavaScriptExpression("function( selectedDate ) { jQuery('#{$id}').val(selectedDate);}");
+			$this->options['altField']='#'.$id;
 
-			$id = $this->htmlOptions['id'] = $id.'_container';
-			$this->htmlOptions['name'] = $name.'_container';
+			$id=$this->htmlOptions['id']=$id.'_container';
+			$this->htmlOptions['name']=$name.'_container';
 
-			echo CHtml::tag('div', $this->htmlOptions, '');
+			echo CHtml::tag('div',$this->htmlOptions,'');
 		}
 
 		$options=CJavaScript::encode($this->options);
 		$js = "jQuery('#{$id}').datepicker($options);";
 
-		if ($this->language!='' && $this->language!='en')
+		if($this->language!='' && $this->language!='en')
 		{
 			$this->registerScriptFile($this->i18nScriptFile);
-			$js = "jQuery('#{$id}').datepicker(jQuery.extend({showMonthAfterYear:false}, jQuery.datepicker.regional['{$this->language}'], {$options}));";
+			$js = "jQuery('#{$id}').datepicker(jQuery.extend({showMonthAfterYear:false},jQuery.datepicker.regional['{$this->language}'],{$options}));";
 		}
 
 		$cs = Yii::app()->getClientScript();
 
-		if (isset($this->defaultOptions))
+		if(isset($this->defaultOptions))
 		{
 			$this->registerScriptFile($this->i18nScriptFile);
-			$cs->registerScript(__CLASS__, 	$this->defaultOptions!==null?'jQuery.datepicker.setDefaults('.CJavaScript::encode($this->defaultOptions).');':'');
+			$cs->registerScript(__CLASS__,$this->defaultOptions!==null?'jQuery.datepicker.setDefaults('.CJavaScript::encode($this->defaultOptions).');':'');
 		}
-		$cs->registerScript(__CLASS__.'#'.$id, $js);
-
+		$cs->registerScript(__CLASS__.'#'.$id,$js);
 	}
 }

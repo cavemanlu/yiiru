@@ -4,7 +4,7 @@
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.yiiframework.com/
- * @copyright Copyright &copy; 2008-2011 Yii Software LLC
+ * @copyright 2008-2013 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
 
@@ -164,7 +164,7 @@ class CDbConnection extends CApplicationComponent
 	 */
 	public $queryCachingDuration=0;
 	/**
-	 * @var CCacheDependency зависимость, используемая при сохранении результата запроса в кэш
+	 * @var CCacheDependency|ICacheDependency зависимость, используемая при сохранении результата запроса в кэш
 	 * @see queryCachingDuration
 	 * @since 1.1.7
 	 */
@@ -363,7 +363,7 @@ class CDbConnection extends CApplicationComponent
 	 * @param integer $duration время в секундах, в течение которого результаты
 	 * запросов в кэше могут оставаться валидными. Если установлено в значение
 	 * 0, то кэширование запросов отключено
-	 * @param CCacheDependency $dependency зависимость, используемая при
+	 * @param CCacheDependency|ICacheDependency $dependency зависимость, используемая при
 	 * сохранении результатов запросов в кэш
 	 * @param integer $queryCount количество SQL-запросов для кэширования после
 	 * выполнения данного метода. По умолчанию - 1, т.е. следующий запрос будет
@@ -429,6 +429,7 @@ class CDbConnection extends CApplicationComponent
 	 * Создает экземпляр PDO-класса. Если в PDO-драйвере нет некоторого
 	 * функционала, можно использовать класс-адаптер для предоставления этого
 	 * функционала
+	 * @throws CDbException вызывается, если не удалось открыть соединение
 	 * @return PDO экземпляр PDO-класса
 	 */
 	protected function createPdoInstance()
@@ -442,12 +443,21 @@ class CDbConnection extends CApplicationComponent
 			elseif($driver==='sqlsrv')
 				$pdoClass='CMssqlSqlsrvPdoAdapter';
 		}
-		return new $pdoClass($this->connectionString,$this->username,
-									$this->password,$this->_attributes);
+
+		if(!class_exists($pdoClass))
+			throw new CDbException(Yii::t('yii','CDbConnection is unable to find PDO class "{className}". Make sure PDO is installed correctly.',
+				array('{className}'=>$pdoClass)));
+
+		@$instance=new $pdoClass($this->connectionString,$this->username,$this->password,$this->_attributes);
+
+		if(!$instance)
+			throw new CDbException(Yii::t('yii','CDbConnection failed to open the DB connection.'));
+
+		return $instance;
 	}
 
 	/**
-	 * Инициализирует открытое соединение БД. Метод вызывает сразу после
+	 * Инициализирует открытое соединение БД. Метод вызывается сразу после
 	 * установки соединения. Реализация по умолчанию устанавливает кодировку
 	 * для соединений баз MySQL и PostgreSQL
 	 * @param PDO $pdo экземпляр PDO-класса

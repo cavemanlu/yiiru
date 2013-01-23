@@ -4,7 +4,7 @@
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.yiiframework.com/
- * @copyright Copyright &copy; 2008-2011 Yii Software LLC
+ * @copyright 2008-2013 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
 
@@ -207,8 +207,8 @@ class CGridView extends CBaseListView
 	/**
 	 * @var string javascript-функция, вызываемая после изменения списка выбранных строк.
 	 * Вид функции - <code>function(id)</code>, где 'id' - идентификатор виджета таблицы.
-	 * В данной функции можно использовать функцию <code>$.fn.yiiGridView.getSelection(id)</code> для получения значений
-	 * ключей выбранных строк
+	 * В данной функции можно использовать функцию <code>$(gridID).yiiGridView('getSelection')</code> для получения значений
+	 * ключей выбранных строк (gridID is the DOM selector of the grid)
 	 * @see selectableRows
 	 */
 	public $selectionChanged;
@@ -216,7 +216,7 @@ class CGridView extends CBaseListView
 	 * @var integer количество доступных для выделения строк таблицы. Если равно 0, то ни одна строка не может быть выбрана;
 	 * если 1 - только 1 строка может быть выбрана; если 2 и больше - могут быть выбраны несколько строк.
 	 * Выбранная строка будет иметь CSS-класс с именем 'selected'. Также можно вызвать JavaScript-функцию
-	 * <code>$.fn.yiiGridView.getSelection(containerID)</code> для получения значений ключей выбранных строк
+	 * <code>$(gridID).yiiGridView('getSelection')</code> для получения значений ключей выбранных строк (gridID is the DOM selector of the grid)
 	 */
 	public $selectableRows=1;
 	/**

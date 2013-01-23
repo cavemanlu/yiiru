@@ -4,7 +4,7 @@
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.yiiframework.com/
- * @copyright Copyright &copy; 2008-2011 Yii Software LLC
+ * @copyright 2008-2013 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
 
@@ -30,7 +30,7 @@ class CFileHelper
 	}
 	/**
 	 * Рекурсивно копирует директорию.
-	 * Если директория назначения не задана, она создается.
+	 * Если директория назначения не задана, она создается (рекурсивно).
 	 * @param string $src копируемая директория
 	 * @param string $dst директория назначения
 	 * @param array $options настройки для копирования директории. Допустимы следующие настройки:
@@ -45,8 +45,10 @@ class CFileHelper
 	 * <li>level: целое число, глубина рекурсии, по умолчанию равно -1.
 	 * Уровень -1 означает, что будут скопированы все файлы и директории;
 	 * Уровень 0 означает, что будут скопированы только файлы, находящиеся НЕПОСРЕДСТВЕННО в данной директории;
-	 * Уровень N означает, что будут скопированы директории вплоть до уровня N.
+	 * Уровень N означает, что будут скопированы директории вплоть до уровня N;
  	 * </li>
+	 * <li>newDirMode - the permission to be set for newly copied directories (defaults to 0777);</li>
+	 * <li>newFileMode - the permission to be set for newly copied files (defaults to the current environment setting).</li>
 	 * </ul>
 	 */
 	public static function copyDirectory($src,$dst,$options=array())
@@ -113,11 +115,8 @@ class CFileHelper
 	protected static function copyDirectoryRecursive($src,$dst,$base,$fileTypes,$exclude,$level,$options)
 	{
 		if(!is_dir($dst))
-			mkdir($dst);
-		if(isset($options['newDirMode']))
-			@chmod($dst,$options['newDirMode']);
-		else
-			@chmod($dst,0777);
+			self::mkdir($dst,$options,false);
+
 		$folder=opendir($src);
 		while(($file=readdir($folder))!==false)
 		{
@@ -131,7 +130,7 @@ class CFileHelper
 				{
 					copy($path,$dst.DIRECTORY_SEPARATOR.$file);
 					if(isset($options['newFileMode']))
-						@chmod($dst.DIRECTORY_SEPARATOR.$file, $options['newFileMode']);
+						chmod($dst.DIRECTORY_SEPARATOR.$file,$options['newFileMode']);
 				}
 				elseif($level)
 					self::copyDirectoryRecursive($path,$dst.DIRECTORY_SEPARATOR.$file,$base.'/'.$file,$fileTypes,$exclude,$level-1,$options);
@@ -269,5 +268,28 @@ class CFileHelper
 				return $customExtensions[$magicFile][$ext];
 		}
 		return null;
+	}
+
+	/**
+	 * Shared environment safe version of mkdir. Supports recursive creation.
+	 * For avoidance of umask side-effects chmod is used.
+	 *
+	 * @static
+	 * @param string $dst path to be created
+	 * @param array $options newDirMode element used, must contain access bitmask.
+	 * @param boolean $recursive
+	 * @return boolean result of mkdir
+	 * @see mkdir
+	 */
+	private static function mkdir($dst,array $options,$recursive)
+	{
+		$prevDir=dirname($dst);
+		if($recursive && !is_dir($dst) && !is_dir($prevDir))
+			self::mkdir(dirname($dst),$options,true);
+
+		$mode=isset($options['newDirMode']) ? $options['newDirMode'] : 0777;
+		$res=mkdir($dst, $mode);
+		chmod($dst,$mode);
+		return $res;
 	}
 }
